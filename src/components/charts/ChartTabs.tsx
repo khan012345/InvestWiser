@@ -38,16 +38,16 @@ export function ChartTabs({
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
         {/* Tab Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-4">
+        <div className="flex items-center justify-between border-b border-gray-100 dark:border-slate-700 px-4">
           <div className="flex">
             <button
               onClick={() => setActiveTab('growth')}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 ${
                 activeTab === 'growth'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
               }`}
             >
               <TrendingUp className="w-4 h-4" />
@@ -55,10 +55,10 @@ export function ChartTabs({
             </button>
             <button
               onClick={() => setActiveTab('distribution')}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-all duration-200 ${
+              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 ${
                 activeTab === 'distribution'
-                  ? 'border-indigo-500 text-indigo-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
+                  : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
               }`}
             >
               <PieChart className="w-4 h-4" />
@@ -68,7 +68,7 @@ export function ChartTabs({
           {activeTab === 'growth' && (
             <button
               onClick={handleExpand}
-              className="p-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+              className="p-2 text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
               title="Expand to fullscreen"
             >
               <Maximize2 className="w-4 h-4" />
@@ -77,10 +77,10 @@ export function ChartTabs({
         </div>
 
         {/* Tab Content */}
-        <div className="p-6">
+        <div className="p-5">
           {activeTab === 'growth' && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-4">
                 {growthTitle}
               </h3>
               <GrowthChart data={chartData} region={region} />
@@ -88,7 +88,7 @@ export function ChartTabs({
           )}
           {activeTab === 'distribution' && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-4">
                 {distributionTitle}
               </h3>
               <DistributionChart
@@ -103,13 +103,13 @@ export function ChartTabs({
 
       {/* Fullscreen Modal */}
       {isExpanded && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col">
+        <div className="fixed inset-0 z-50 bg-white dark:bg-slate-900 flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">{growthTitle}</h2>
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-slate-700">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{growthTitle}</h2>
             <button
               onClick={handleClose}
-              className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
               title="Close"
             >
               <X className="w-5 h-5" />

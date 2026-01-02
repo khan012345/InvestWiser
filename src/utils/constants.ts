@@ -15,7 +15,7 @@ export const DEFAULT_VALUES = {
   },
   expectedReturn: 10,
   tenure: 10,
-  stepUpPercentage: 7,
+  stepUpPercentage: 10,
   stepUpFrequency: 'annual' as StepUpFrequency,
   region: 'INR' as Region,
 };

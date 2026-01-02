@@ -34,22 +34,22 @@ function ExportDropdown({ onExportCSV, onExportExcel }: ExportDropdownProps) {
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-slate-200 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
       >
         <Download className="w-4 h-4" />
         Export
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
-        <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+        <div className="absolute right-0 mt-1 w-40 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg shadow-lg z-50">
           <button
             onClick={() => {
               onExportCSV();
               setIsOpen(false);
             }}
-            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-t-lg"
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors rounded-t-lg"
           >
-            <FileText className="w-4 h-4 text-green-600" />
+            <FileText className="w-4 h-4 text-green-600 dark:text-green-400" />
             Export as CSV
           </button>
           <button
@@ -57,9 +57,9 @@ function ExportDropdown({ onExportCSV, onExportExcel }: ExportDropdownProps) {
               onExportExcel();
               setIsOpen(false);
             }}
-            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-b-lg border-t border-gray-100"
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors rounded-b-lg border-t border-gray-100 dark:border-slate-600"
           >
-            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             Export as Excel
           </button>
         </div>
@@ -70,11 +70,11 @@ function ExportDropdown({ onExportCSV, onExportExcel }: ExportDropdownProps) {
 
 export function SIPYearlyTable({ data, region, showMonthlyAmount = false }: SIPYearlyTableProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
       {/* Header with Export - separate div to avoid clipping */}
-      <div className="px-6 py-4 border-b border-gray-100 flex flex-row items-center justify-between">
+      <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
-          <Table className="w-5 h-5 text-indigo-600" />
+          <Table className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <CardTitle>Year-on-Year Breakdown</CardTitle>
         </div>
         <ExportDropdown
@@ -86,80 +86,80 @@ export function SIPYearlyTable({ data, region, showMonthlyAmount = false }: SIPY
       <div className="table-container max-h-96 overflow-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            <tr className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Year
               </th>
               {showMonthlyAmount && (
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                   Monthly SIP
                 </th>
               )}
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Annual Investment
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Cumulative Investment
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Value at Year-End
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Total Returns
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
             {data.map((row, index) => (
               <tr
                 key={row.year}
                 className={`
-                  ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
-                  ${row.year % 5 === 0 ? 'bg-indigo-50/50' : ''}
-                  hover:bg-indigo-50/30 transition-colors
+                  ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-gray-50/50 dark:bg-slate-700/50'}
+                  ${row.year % 5 === 0 ? 'bg-indigo-50/50 dark:bg-indigo-900/20' : ''}
+                  hover:bg-indigo-50/30 dark:hover:bg-indigo-900/30 transition-colors
                 `}
               >
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
                   {row.year}
                 </td>
                 {showMonthlyAmount && (
-                  <td className="px-4 py-3 text-sm text-right text-gray-700">
+                  <td className="px-4 py-3 text-sm text-right text-gray-700 dark:text-slate-300">
                     {formatCurrency(row.monthlyAmount || 0, region)}
                   </td>
                 )}
-                <td className="px-4 py-3 text-sm text-right text-gray-700">
+                <td className="px-4 py-3 text-sm text-right text-gray-700 dark:text-slate-300">
                   {formatCurrency(row.annualInvestment, region)}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-blue-600 font-medium">
+                <td className="px-4 py-3 text-sm text-right text-blue-600 dark:text-blue-400 font-medium">
                   {formatCurrency(row.cumulativeInvestment, region)}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-purple-600 font-medium">
+                <td className="px-4 py-3 text-sm text-right text-purple-600 dark:text-purple-400 font-medium">
                   {formatCurrency(row.valueAtYearEnd, region)}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
+                <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-400 font-medium">
                   {formatCurrency(row.totalReturns, region)}
                 </td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="bg-gray-100 border-t-2 border-gray-200">
-              <td className="px-4 py-3 text-sm font-bold text-gray-900">
+            <tr className="bg-gray-100 dark:bg-slate-700 border-t-2 border-gray-200 dark:border-slate-600">
+              <td className="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white">
                 Total
               </td>
               {showMonthlyAmount && <td />}
-              <td className="px-4 py-3 text-sm text-right text-gray-500">-</td>
-              <td className="px-4 py-3 text-sm text-right text-blue-700 font-bold">
+              <td className="px-4 py-3 text-sm text-right text-gray-500 dark:text-slate-400">-</td>
+              <td className="px-4 py-3 text-sm text-right text-blue-700 dark:text-blue-400 font-bold">
                 {data.length > 0
                   ? formatCurrency(data[data.length - 1].cumulativeInvestment, region)
                   : '-'}
               </td>
-              <td className="px-4 py-3 text-sm text-right text-purple-700 font-bold">
+              <td className="px-4 py-3 text-sm text-right text-purple-700 dark:text-purple-400 font-bold">
                 {data.length > 0
                   ? formatCurrency(data[data.length - 1].valueAtYearEnd, region)
                   : '-'}
               </td>
-              <td className="px-4 py-3 text-sm text-right text-green-700 font-bold">
+              <td className="px-4 py-3 text-sm text-right text-green-700 dark:text-green-400 font-bold">
                 {data.length > 0
                   ? formatCurrency(data[data.length - 1].totalReturns, region)
                   : '-'}
@@ -179,11 +179,11 @@ interface SWPYearlyTableProps {
 
 export function SWPYearlyTable({ data, region }: SWPYearlyTableProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
       {/* Header with Export - separate div to avoid clipping */}
-      <div className="px-6 py-4 border-b border-gray-100 flex flex-row items-center justify-between">
+      <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
-          <Table className="w-5 h-5 text-indigo-600" />
+          <Table className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <CardTitle>Year-on-Year Breakdown</CardTitle>
         </div>
         <ExportDropdown
@@ -195,69 +195,69 @@ export function SWPYearlyTable({ data, region }: SWPYearlyTableProps) {
       <div className="table-container max-h-96 overflow-auto">
         <table className="w-full">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+            <tr className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Year
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Annual Withdrawal
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Cumulative Withdrawal
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Corpus at Year-End
               </th>
-              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Interest Earned
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
             {data.map((row, index) => (
               <tr
                 key={row.year}
                 className={`
-                  ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
-                  ${row.year % 5 === 0 ? 'bg-indigo-50/50' : ''}
-                  hover:bg-indigo-50/30 transition-colors
+                  ${index % 2 === 0 ? 'bg-white dark:bg-slate-800' : 'bg-gray-50/50 dark:bg-slate-700/50'}
+                  ${row.year % 5 === 0 ? 'bg-indigo-50/50 dark:bg-indigo-900/20' : ''}
+                  hover:bg-indigo-50/30 dark:hover:bg-indigo-900/30 transition-colors
                 `}
               >
-                <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">
                   {row.year}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-gray-700">
+                <td className="px-4 py-3 text-sm text-right text-gray-700 dark:text-slate-300">
                   {formatCurrency(row.annualWithdrawal, region)}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-red-600 font-medium">
+                <td className="px-4 py-3 text-sm text-right text-red-600 dark:text-red-400 font-medium">
                   {formatCurrency(row.cumulativeWithdrawal, region)}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-purple-600 font-medium">
+                <td className="px-4 py-3 text-sm text-right text-purple-600 dark:text-purple-400 font-medium">
                   {formatCurrency(row.corpusAtYearEnd, region)}
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
+                <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-400 font-medium">
                   {formatCurrency(row.interestEarned, region)}
                 </td>
               </tr>
             ))}
           </tbody>
           <tfoot>
-            <tr className="bg-gray-100 border-t-2 border-gray-200">
-              <td className="px-4 py-3 text-sm font-bold text-gray-900">
+            <tr className="bg-gray-100 dark:bg-slate-700 border-t-2 border-gray-200 dark:border-slate-600">
+              <td className="px-4 py-3 text-sm font-bold text-gray-900 dark:text-white">
                 Total
               </td>
-              <td className="px-4 py-3 text-sm text-right text-gray-500">-</td>
-              <td className="px-4 py-3 text-sm text-right text-red-700 font-bold">
+              <td className="px-4 py-3 text-sm text-right text-gray-500 dark:text-slate-400">-</td>
+              <td className="px-4 py-3 text-sm text-right text-red-700 dark:text-red-400 font-bold">
                 {data.length > 0
                   ? formatCurrency(data[data.length - 1].cumulativeWithdrawal, region)
                   : '-'}
               </td>
-              <td className="px-4 py-3 text-sm text-right text-purple-700 font-bold">
+              <td className="px-4 py-3 text-sm text-right text-purple-700 dark:text-purple-400 font-bold">
                 {data.length > 0
                   ? formatCurrency(data[data.length - 1].corpusAtYearEnd, region)
                   : '-'}
               </td>
-              <td className="px-4 py-3 text-sm text-right text-green-700 font-bold">
+              <td className="px-4 py-3 text-sm text-right text-green-700 dark:text-green-400 font-bold">
                 {data.length > 0
                   ? formatCurrency(
                       data.reduce((sum, row) => sum + row.interestEarned, 0),

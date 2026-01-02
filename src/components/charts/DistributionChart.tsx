@@ -2,6 +2,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import type { Region } from '../../types';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { CHART_COLORS } from '../../utils/constants';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface DistributionChartProps {
   investment: number;
@@ -21,15 +22,16 @@ interface CustomTooltipProps {
   active?: boolean;
   payload?: TooltipPayload[];
   region: Region;
+  isDark: boolean;
 }
 
-function CustomTooltip({ active, payload, region }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, region, isDark }: CustomTooltipProps) {
   if (!active || !payload || !payload.length) return null;
 
   const data = payload[0];
   return (
-    <div className="bg-white p-3 rounded-lg shadow-lg border border-gray-100">
-      <p className="font-medium text-gray-900">{data.name}</p>
+    <div className={`p-3 rounded-lg shadow-lg border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'}`}>
+      <p className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{data.name}</p>
       <p className="text-sm" style={{ color: data.payload.color }}>
         {formatCurrency(data.value, region)}
       </p>
@@ -56,13 +58,13 @@ function CustomLegend({ investment, returns, region }: CustomLegendProps) {
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: CHART_COLORS.investment }}
           />
-          <span className="text-sm text-gray-600">Total Investment</span>
+          <span className="text-sm text-gray-600 dark:text-slate-400">Total Investment</span>
         </div>
         <div className="text-right">
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
             {formatCurrency(investment, region)}
           </span>
-          <span className="text-xs text-gray-500 ml-2">({investmentPercent}%)</span>
+          <span className="text-xs text-gray-500 dark:text-slate-500 ml-2">({investmentPercent}%)</span>
         </div>
       </div>
       <div className="flex items-center justify-between">
@@ -71,13 +73,13 @@ function CustomLegend({ investment, returns, region }: CustomLegendProps) {
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: CHART_COLORS.returns }}
           />
-          <span className="text-sm text-gray-600">Expected Returns</span>
+          <span className="text-sm text-gray-600 dark:text-slate-400">Expected Returns</span>
         </div>
         <div className="text-right">
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-gray-900 dark:text-white">
             {formatCurrency(returns, region)}
           </span>
-          <span className="text-xs text-gray-500 ml-2">({returnsPercent}%)</span>
+          <span className="text-xs text-gray-500 dark:text-slate-500 ml-2">({returnsPercent}%)</span>
         </div>
       </div>
     </div>
@@ -85,6 +87,7 @@ function CustomLegend({ investment, returns, region }: CustomLegendProps) {
 }
 
 export function DistributionChart({ investment, returns, region }: DistributionChartProps) {
+  const { isDark } = useTheme();
   const data = [
     { name: 'Total Investment', value: investment, color: CHART_COLORS.investment },
     { name: 'Expected Returns', value: returns, color: CHART_COLORS.returns },
@@ -108,7 +111,7 @@ export function DistributionChart({ investment, returns, region }: DistributionC
                 <Cell key={`cell-${index}`} fill={entry.color} />
               ))}
             </Pie>
-            <Tooltip content={<CustomTooltip region={region} />} />
+            <Tooltip content={<CustomTooltip region={region} isDark={isDark} />} />
           </PieChart>
         </ResponsiveContainer>
       </div>

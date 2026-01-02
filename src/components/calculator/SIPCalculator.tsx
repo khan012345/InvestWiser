@@ -47,14 +47,14 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
   const ranges = INPUT_RANGES.monthlyInvestment[region];
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Input Panel */}
         <div className="lg:col-span-1">
           <Card>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">SIP Parameters</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">SIP Parameters</h2>
                 <Button variant="ghost" size="sm" onClick={handleReset}>
                   <RotateCcw className="w-4 h-4" />
                   Reset
@@ -96,9 +96,9 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
         </div>
 
         {/* Results Panel */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-5">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <SummaryCard
               title="Total Investment"
               value={formatCurrency(result.totalInvestment, region)}

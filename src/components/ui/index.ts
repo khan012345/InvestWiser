@@ -5,3 +5,4 @@ export { Tabs } from './Tabs';
 export { SummaryCard } from './SummaryCard';
 export { RadioGroup } from './RadioGroup';
 export { Button } from './Button';
+export { ThemeToggle } from './ThemeToggle';

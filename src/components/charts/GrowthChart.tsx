@@ -11,6 +11,7 @@ import {
 import type { ChartDataPoint, Region } from '../../types';
 import { formatCurrencyCompact, formatCurrency } from '../../utils/formatCurrency';
 import { CHART_COLORS } from '../../utils/constants';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface GrowthChartProps {
   data: ChartDataPoint[];
@@ -30,9 +31,10 @@ interface CustomTooltipProps {
   payload?: TooltipPayload[];
   label?: number;
   region: Region;
+  isDark: boolean;
 }
 
-function CustomTooltip({ active, payload, label, region }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, label, region, isDark }: CustomTooltipProps) {
   if (!active || !payload || !payload.length) return null;
 
   const investmentData = payload.find((p) => p.dataKey === 'investment');
@@ -43,24 +45,24 @@ function CustomTooltip({ active, payload, label, region }: CustomTooltipProps) {
   const returns = value - investment;
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-100">
-      <p className="font-semibold text-gray-900 mb-2">Year {label}</p>
+    <div className={`p-4 rounded-lg shadow-lg border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'}`}>
+      <p className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Year {label}</p>
       <div className="space-y-1 text-sm">
         <div className="flex justify-between gap-4">
-          <span className="text-gray-600">Investment:</span>
-          <span className="font-medium text-blue-600">
+          <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Investment:</span>
+          <span className="font-medium text-blue-500">
             {formatCurrency(investment, region)}
           </span>
         </div>
         <div className="flex justify-between gap-4">
-          <span className="text-gray-600">Returns:</span>
-          <span className="font-medium text-green-600">
+          <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Returns:</span>
+          <span className="font-medium text-green-500">
             {formatCurrency(returns, region)}
           </span>
         </div>
-        <div className="flex justify-between gap-4 pt-1 border-t border-gray-100">
-          <span className="text-gray-600">Total Value:</span>
-          <span className="font-medium text-purple-600">
+        <div className={`flex justify-between gap-4 pt-1 border-t ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
+          <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Total Value:</span>
+          <span className="font-medium text-purple-500">
             {formatCurrency(value, region)}
           </span>
         </div>
@@ -70,7 +72,11 @@ function CustomTooltip({ active, payload, label, region }: CustomTooltipProps) {
 }
 
 export function GrowthChart({ data, region, fullHeight = false }: GrowthChartProps) {
+  const { isDark } = useTheme();
   const formatYAxis = (value: number) => formatCurrencyCompact(value, region);
+
+  const gridColor = isDark ? '#334155' : '#e5e7eb';
+  const tickColor = isDark ? '#94a3b8' : '#6b7280';
 
   return (
     <div className={`w-full ${fullHeight ? 'h-full' : 'h-80'}`}>
@@ -89,27 +95,27 @@ export function GrowthChart({ data, region, fullHeight = false }: GrowthChartPro
               <stop offset="95%" stopColor={CHART_COLORS.returns} stopOpacity={0.2} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
           <XAxis
             dataKey="year"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#6b7280', fontSize: 12 }}
+            tick={{ fill: tickColor, fontSize: 12 }}
             tickFormatter={(value) => `Y${value}`}
           />
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ fill: '#6b7280', fontSize: 12 }}
+            tick={{ fill: tickColor, fontSize: 12 }}
             tickFormatter={formatYAxis}
             width={70}
           />
-          <Tooltip content={<CustomTooltip region={region} />} />
+          <Tooltip content={<CustomTooltip region={region} isDark={isDark} />} />
           <Legend
             verticalAlign="top"
             height={36}
             formatter={(value) => (
-              <span className="text-sm text-gray-600">
+              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                 {value === 'investment' ? 'Total Investment' : 'Total Value'}
               </span>
             )}

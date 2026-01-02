@@ -61,14 +61,14 @@ export function StepUpSIPCalculator({ region }: StepUpSIPCalculatorProps) {
       : monthlyInvestment;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Input Panel */}
         <div className="lg:col-span-1">
           <Card>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">Step-Up SIP Parameters</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Step-Up SIP Parameters</h2>
                 <Button variant="ghost" size="sm" onClick={handleReset}>
                   <RotateCcw className="w-4 h-4" />
                   Reset
@@ -125,8 +125,8 @@ export function StepUpSIPCalculator({ region }: StepUpSIPCalculatorProps) {
               />
 
               {/* Final SIP Amount Info */}
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
-                <p className="text-sm text-amber-800">
+              <div className="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-md p-3">
+                <p className="text-sm text-amber-800 dark:text-amber-200">
                   <span className="font-medium">Final Monthly SIP (Year {tenure}):</span>
                   <br />
                   <span className="text-lg font-bold">
@@ -139,9 +139,9 @@ export function StepUpSIPCalculator({ region }: StepUpSIPCalculatorProps) {
         </div>
 
         {/* Results Panel */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-5">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <SummaryCard
               title="Total Investment"
               value={formatCurrency(result.totalInvestment, region)}

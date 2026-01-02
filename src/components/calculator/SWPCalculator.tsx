@@ -61,14 +61,14 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
   );
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div className="space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
         {/* Input Panel */}
         <div className="lg:col-span-1">
           <Card>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900">SWP Parameters</h2>
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">SWP Parameters</h2>
                 <Button variant="ghost" size="sm" onClick={handleReset}>
                   <RotateCcw className="w-4 h-4" />
                   Reset
@@ -118,8 +118,8 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
 
               {/* Corpus depletion warning */}
               {result.remainingCorpus <= 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-sm text-red-800">
+                <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-md p-3">
+                  <p className="text-sm text-red-800 dark:text-red-200">
                     <span className="font-medium">Warning:</span> Your corpus will be depleted
                     before the end of the tenure. Consider reducing monthly withdrawal or
                     increasing the expected return rate.
@@ -131,9 +131,9 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
         </div>
 
         {/* Results Panel */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-5">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <SummaryCard
               title="Total Withdrawn"
               value={formatCurrency(result.totalWithdrawn, region)}
