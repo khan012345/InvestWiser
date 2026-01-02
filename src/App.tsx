@@ -15,7 +15,7 @@ function App() {
   const [region, setRegion] = useState<Region>('INR');
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex flex-col">
       {/* Header */}
       <header className="bg-white dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,7 +40,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full">
         {/* Tabs */}
         <div className="bg-white dark:bg-slate-800 rounded-t-xl border border-b-0 border-gray-200 dark:border-slate-700">
           <Tabs
@@ -59,7 +59,7 @@ function App() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 mt-8">
+      <footer className="bg-white dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-center text-sm text-gray-500 dark:text-slate-400">
             Disclaimer: The calculations are based on assumed rates of return and are for

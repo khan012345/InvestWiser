@@ -6,18 +6,22 @@ export const DEFAULT_VALUES = {
     USD: 300,
   },
   initialCorpus: {
-    INR: 5000000,
+    INR: 10000000,
     USD: 60000,
   },
   monthlyWithdrawal: {
     INR: 50000,
     USD: 600,
   },
-  expectedReturn: 10,
+  expectedReturn: 12,
   tenure: 10,
   stepUpPercentage: 10,
   stepUpFrequency: 'annual' as StepUpFrequency,
   region: 'INR' as Region,
+  inflationRate: {
+    INR: 6, // India's typical inflation rate
+    USD: 3, // US typical inflation rate
+  },
 };
 
 export const INPUT_RANGES = {
@@ -36,6 +40,7 @@ export const INPUT_RANGES = {
   expectedReturn: { min: 1, max: 30, step: 0.5 },
   tenure: { min: 1, max: 50, step: 1 },
   stepUpPercentage: { min: 0, max: 25, step: 0.5 },
+  inflationRate: { min: 0, max: 15, step: 0.5 },
 };
 
 export const STEP_UP_FREQUENCY_OPTIONS = [
@@ -50,4 +55,5 @@ export const CHART_COLORS = {
   maturity: '#8b5cf6', // Purple
   investmentLight: '#93c5fd',
   returnsLight: '#6ee7b7',
+  inflationAdjusted: '#f59e0b', // Amber - for inflation-adjusted line
 };

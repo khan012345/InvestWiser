@@ -11,6 +11,8 @@ interface ChartTabsProps {
   region: Region;
   growthTitle?: string;
   distributionTitle?: string;
+  showInflation?: boolean;
+  isSWP?: boolean;
 }
 
 type ChartTab = 'growth' | 'distribution';
@@ -22,6 +24,8 @@ export function ChartTabs({
   region,
   growthTitle = 'Investment Growth Over Time',
   distributionTitle = 'Investment vs Returns',
+  showInflation = false,
+  isSWP = false,
 }: ChartTabsProps) {
   const [activeTab, setActiveTab] = useState<ChartTab>('growth');
   const [isExpanded, setIsExpanded] = useState(false);
@@ -83,7 +87,7 @@ export function ChartTabs({
               <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-4">
                 {growthTitle}
               </h3>
-              <GrowthChart data={chartData} region={region} />
+              <GrowthChart data={chartData} region={region} showInflation={showInflation} isSWP={isSWP} />
             </div>
           )}
           {activeTab === 'distribution' && (
@@ -118,7 +122,7 @@ export function ChartTabs({
           {/* Chart Container */}
           <div className="flex-1 p-6">
             <div className="w-full h-full">
-              <GrowthChart data={chartData} region={region} fullHeight />
+              <GrowthChart data={chartData} region={region} fullHeight showInflation={showInflation} isSWP={isSWP} />
             </div>
           </div>
         </div>

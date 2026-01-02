@@ -9,6 +9,7 @@ interface SIPYearlyTableProps {
   data: YearlyData[];
   region: Region;
   showMonthlyAmount?: boolean;
+  showInflation?: boolean;
 }
 
 interface ExportDropdownProps {
@@ -68,7 +69,10 @@ function ExportDropdown({ onExportCSV, onExportExcel }: ExportDropdownProps) {
   );
 }
 
-export function SIPYearlyTable({ data, region, showMonthlyAmount = false }: SIPYearlyTableProps) {
+export function SIPYearlyTable({ data, region, showMonthlyAmount = false, showInflation = true }: SIPYearlyTableProps) {
+  const hasInflationData = data.length > 0 && data[0].inflationAdjustedValue !== undefined;
+  const displayInflation = showInflation && hasInflationData;
+
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
       {/* Header with Export - separate div to avoid clipping */}
@@ -107,6 +111,11 @@ export function SIPYearlyTable({ data, region, showMonthlyAmount = false }: SIPY
               <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Total Returns
               </th>
+              {displayInflation && (
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                  Inflation Adjusted
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -139,6 +148,11 @@ export function SIPYearlyTable({ data, region, showMonthlyAmount = false }: SIPY
                 <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-400 font-medium">
                   {formatCurrency(row.totalReturns, region)}
                 </td>
+                {displayInflation && (
+                  <td className="px-4 py-3 text-sm text-right text-amber-600 dark:text-amber-400 font-medium">
+                    {formatCurrency(row.inflationAdjustedValue || row.valueAtYearEnd, region)}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -164,6 +178,13 @@ export function SIPYearlyTable({ data, region, showMonthlyAmount = false }: SIPY
                   ? formatCurrency(data[data.length - 1].totalReturns, region)
                   : '-'}
               </td>
+              {displayInflation && (
+                <td className="px-4 py-3 text-sm text-right text-amber-700 dark:text-amber-400 font-bold">
+                  {data.length > 0
+                    ? formatCurrency(data[data.length - 1].inflationAdjustedValue || data[data.length - 1].valueAtYearEnd, region)
+                    : '-'}
+                </td>
+              )}
             </tr>
           </tfoot>
         </table>
@@ -175,9 +196,13 @@ export function SIPYearlyTable({ data, region, showMonthlyAmount = false }: SIPY
 interface SWPYearlyTableProps {
   data: SWPYearlyData[];
   region: Region;
+  showInflation?: boolean;
 }
 
-export function SWPYearlyTable({ data, region }: SWPYearlyTableProps) {
+export function SWPYearlyTable({ data, region, showInflation = true }: SWPYearlyTableProps) {
+  const hasInflationData = data.length > 0 && data[0].inflationAdjustedCorpus !== undefined;
+  const displayInflation = showInflation && hasInflationData;
+
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
       {/* Header with Export - separate div to avoid clipping */}
@@ -211,6 +236,11 @@ export function SWPYearlyTable({ data, region }: SWPYearlyTableProps) {
               <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
                 Interest Earned
               </th>
+              {displayInflation && (
+                <th className="px-4 py-3 text-right text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                  Corpus (Today's Value)
+                </th>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-slate-700">
@@ -238,6 +268,11 @@ export function SWPYearlyTable({ data, region }: SWPYearlyTableProps) {
                 <td className="px-4 py-3 text-sm text-right text-green-600 dark:text-green-400 font-medium">
                   {formatCurrency(row.interestEarned, region)}
                 </td>
+                {displayInflation && (
+                  <td className="px-4 py-3 text-sm text-right text-amber-600 dark:text-amber-400 font-medium">
+                    {formatCurrency(row.inflationAdjustedCorpus || row.corpusAtYearEnd, region)}
+                  </td>
+                )}
               </tr>
             ))}
           </tbody>
@@ -265,6 +300,13 @@ export function SWPYearlyTable({ data, region }: SWPYearlyTableProps) {
                     )
                   : '-'}
               </td>
+              {displayInflation && (
+                <td className="px-4 py-3 text-sm text-right text-amber-700 dark:text-amber-400 font-bold">
+                  {data.length > 0
+                    ? formatCurrency(data[data.length - 1].inflationAdjustedCorpus || data[data.length - 1].corpusAtYearEnd, region)
+                    : '-'}
+                </td>
+              )}
             </tr>
           </tfoot>
         </table>

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Wallet, TrendingUp, PiggyBank, RotateCcw } from 'lucide-react';
+import { Wallet, TrendingUp, PiggyBank, RotateCcw, TrendingDown } from 'lucide-react';
 import type { Region } from '../../types';
 import { calculateSIP, toChartData } from '../../utils/calculations';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -18,10 +18,12 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
   );
   const [expectedReturn, setExpectedReturn] = useState(DEFAULT_VALUES.expectedReturn);
   const [tenure, setTenure] = useState(DEFAULT_VALUES.tenure);
+  const [inflationRate, setInflationRate] = useState(DEFAULT_VALUES.inflationRate[region]);
 
-  // Update monthly investment when region changes
+  // Update values when region changes
   useEffect(() => {
     setMonthlyInvestment(DEFAULT_VALUES.monthlyInvestment[region]);
+    setInflationRate(DEFAULT_VALUES.inflationRate[region]);
   }, [region]);
 
   const result = useMemo(
@@ -31,8 +33,8 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
         expectedReturn,
         tenure,
         region,
-      }),
-    [monthlyInvestment, expectedReturn, tenure, region]
+      }, inflationRate),
+    [monthlyInvestment, expectedReturn, tenure, region, inflationRate]
   );
 
   const chartData = useMemo(() => toChartData(result.yearlyData), [result.yearlyData]);
@@ -41,6 +43,7 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
     setMonthlyInvestment(DEFAULT_VALUES.monthlyInvestment[region]);
     setExpectedReturn(DEFAULT_VALUES.expectedReturn);
     setTenure(DEFAULT_VALUES.tenure);
+    setInflationRate(DEFAULT_VALUES.inflationRate[region]);
   }, [region]);
 
   const currencySymbol = region === 'INR' ? '₹' : '$';
@@ -91,6 +94,17 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
                 step={INPUT_RANGES.tenure.step}
                 suffix=" years"
               />
+
+              <SliderInput
+                label="Expected Inflation Rate"
+                value={inflationRate}
+                onChange={setInflationRate}
+                min={INPUT_RANGES.inflationRate.min}
+                max={INPUT_RANGES.inflationRate.max}
+                step={INPUT_RANGES.inflationRate.step}
+                suffix="%"
+                hint={`Typical: ${region === 'INR' ? '5-7%' : '2-4%'} - Adjusts future value to today's money`}
+              />
             </CardContent>
           </Card>
         </div>
@@ -98,7 +112,7 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
         {/* Results Panel */}
         <div className="lg:col-span-2 space-y-5">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <SummaryCard
               title="Total Investment"
               value={formatCurrency(result.totalInvestment, region)}
@@ -117,6 +131,13 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
               icon={<PiggyBank className="w-5 h-5" />}
               variant="maturity"
             />
+            <SummaryCard
+              title="Inflation Adjusted"
+              value={formatCurrency(result.inflationAdjustedMaturity || result.maturityValue, region)}
+              icon={<TrendingDown className="w-5 h-5" />}
+              variant="inflation"
+              subtitle="Today's value"
+            />
           </div>
 
           {/* Charts */}
@@ -125,6 +146,7 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
             investment={result.totalInvestment}
             returns={result.expectedReturns}
             region={region}
+            showInflation={inflationRate > 0}
           />
         </div>
       </div>

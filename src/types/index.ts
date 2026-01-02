@@ -31,6 +31,9 @@ export interface YearlyData {
   cumulativeInvestment: number;
   valueAtYearEnd: number;
   totalReturns: number;
+  // Inflation-adjusted values (in today's money)
+  inflationAdjustedValue?: number;
+  inflationAdjustedReturns?: number;
 }
 
 export interface SWPYearlyData {
@@ -39,6 +42,9 @@ export interface SWPYearlyData {
   cumulativeWithdrawal: number;
   corpusAtYearEnd: number;
   interestEarned: number;
+  // Inflation-adjusted values (in today's money)
+  inflationAdjustedCorpus?: number;
+  inflationAdjustedWithdrawal?: number;
 }
 
 export interface CalculationResult {
@@ -46,12 +52,17 @@ export interface CalculationResult {
   expectedReturns: number;
   maturityValue: number;
   yearlyData: YearlyData[];
+  // Inflation-adjusted final values
+  inflationAdjustedMaturity?: number;
+  inflationAdjustedReturns?: number;
 }
 
 export interface SWPCalculationResult {
   totalWithdrawn: number;
   remainingCorpus: number;
   yearlyData: SWPYearlyData[];
+  // Inflation-adjusted final values
+  inflationAdjustedCorpus?: number;
 }
 
 export interface ChartDataPoint {
@@ -59,6 +70,8 @@ export interface ChartDataPoint {
   investment: number;
   value: number;
   returns: number;
+  // Inflation-adjusted values for chart
+  inflationAdjustedValue?: number;
 }
 
 export interface PieChartData {

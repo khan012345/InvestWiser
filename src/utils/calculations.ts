@@ -18,10 +18,19 @@ function roundToTwo(num: number): number {
 }
 
 /**
+ * Calculate inflation discount factor for a given year
+ * This converts future value to present value (today's money)
+ */
+function getInflationDiscountFactor(inflationRate: number, years: number): number {
+  if (inflationRate === 0) return 1;
+  return Math.pow(1 + inflationRate / 100, -years);
+}
+
+/**
  * Calculate Regular SIP
  * Formula: FV = P × ((1 + r)^n - 1) / r × (1 + r)
  */
-export function calculateSIP(inputs: SIPInputs): CalculationResult {
+export function calculateSIP(inputs: SIPInputs, inflationRate: number = 0): CalculationResult {
   const { monthlyInvestment, expectedReturn, tenure } = inputs;
 
   const monthlyRate = expectedReturn / 12 / 100;
@@ -39,20 +48,34 @@ export function calculateSIP(inputs: SIPInputs): CalculationResult {
       cumulativeInvestment += monthlyInvestment;
     }
 
+    // Calculate inflation-adjusted values (in today's purchasing power)
+    const discountFactor = getInflationDiscountFactor(inflationRate, year);
+    const inflationAdjustedValue = currentValue * discountFactor;
+    const inflationAdjustedReturns = (currentValue - cumulativeInvestment) * discountFactor;
+
     yearlyData.push({
       year,
       annualInvestment: roundToTwo(annualInvestment),
       cumulativeInvestment: roundToTwo(cumulativeInvestment),
       valueAtYearEnd: roundToTwo(currentValue),
       totalReturns: roundToTwo(currentValue - cumulativeInvestment),
+      inflationAdjustedValue: roundToTwo(inflationAdjustedValue),
+      inflationAdjustedReturns: roundToTwo(inflationAdjustedReturns),
     });
   }
+
+  // Final inflation-adjusted values
+  const finalDiscountFactor = getInflationDiscountFactor(inflationRate, tenure);
+  const inflationAdjustedMaturity = currentValue * finalDiscountFactor;
+  const inflationAdjustedReturns = (currentValue - cumulativeInvestment) * finalDiscountFactor;
 
   return {
     totalInvestment: roundToTwo(cumulativeInvestment),
     expectedReturns: roundToTwo(currentValue - cumulativeInvestment),
     maturityValue: roundToTwo(currentValue),
     yearlyData,
+    inflationAdjustedMaturity: roundToTwo(inflationAdjustedMaturity),
+    inflationAdjustedReturns: roundToTwo(inflationAdjustedReturns),
   };
 }
 
@@ -89,7 +112,7 @@ function getStepUpRate(annualRate: number, frequency: StepUpFrequency): number {
 /**
  * Calculate Step-Up SIP
  */
-export function calculateStepUpSIP(inputs: StepUpSIPInputs): CalculationResult {
+export function calculateStepUpSIP(inputs: StepUpSIPInputs, inflationRate: number = 0): CalculationResult {
   const { monthlyInvestment, expectedReturn, tenure, stepUpPercentage, stepUpFrequency } = inputs;
 
   const monthlyRate = expectedReturn / 12 / 100;
@@ -120,6 +143,11 @@ export function calculateStepUpSIP(inputs: StepUpSIPInputs): CalculationResult {
       }
     }
 
+    // Calculate inflation-adjusted values (in today's purchasing power)
+    const discountFactor = getInflationDiscountFactor(inflationRate, year);
+    const inflationAdjustedValue = currentValue * discountFactor;
+    const inflationAdjustedReturns = (currentValue - cumulativeInvestment) * discountFactor;
+
     yearlyData.push({
       year,
       monthlyAmount: roundToTwo(yearStartMonthlyAmount),
@@ -127,21 +155,30 @@ export function calculateStepUpSIP(inputs: StepUpSIPInputs): CalculationResult {
       cumulativeInvestment: roundToTwo(cumulativeInvestment),
       valueAtYearEnd: roundToTwo(currentValue),
       totalReturns: roundToTwo(currentValue - cumulativeInvestment),
+      inflationAdjustedValue: roundToTwo(inflationAdjustedValue),
+      inflationAdjustedReturns: roundToTwo(inflationAdjustedReturns),
     });
   }
+
+  // Final inflation-adjusted values
+  const finalDiscountFactor = getInflationDiscountFactor(inflationRate, tenure);
+  const inflationAdjustedMaturity = currentValue * finalDiscountFactor;
+  const inflationAdjustedReturns = (currentValue - cumulativeInvestment) * finalDiscountFactor;
 
   return {
     totalInvestment: roundToTwo(cumulativeInvestment),
     expectedReturns: roundToTwo(currentValue - cumulativeInvestment),
     maturityValue: roundToTwo(currentValue),
     yearlyData,
+    inflationAdjustedMaturity: roundToTwo(inflationAdjustedMaturity),
+    inflationAdjustedReturns: roundToTwo(inflationAdjustedReturns),
   };
 }
 
 /**
  * Calculate SWP (Systematic Withdrawal Plan)
  */
-export function calculateSWP(inputs: SWPInputs): SWPCalculationResult {
+export function calculateSWP(inputs: SWPInputs, inflationRate: number = 0): SWPCalculationResult {
   const { initialCorpus, monthlyWithdrawal, expectedReturn, tenure } = inputs;
 
   const monthlyRate = expectedReturn / 12 / 100;
@@ -175,21 +212,33 @@ export function calculateSWP(inputs: SWPInputs): SWPCalculationResult {
 
     cumulativeWithdrawal += annualWithdrawal;
 
+    // Calculate inflation-adjusted values (in today's purchasing power)
+    const discountFactor = getInflationDiscountFactor(inflationRate, year);
+    const inflationAdjustedCorpus = Math.max(0, currentCorpus) * discountFactor;
+    const inflationAdjustedWithdrawal = annualWithdrawal * discountFactor;
+
     yearlyData.push({
       year,
       annualWithdrawal: roundToTwo(annualWithdrawal),
       cumulativeWithdrawal: roundToTwo(cumulativeWithdrawal),
       corpusAtYearEnd: roundToTwo(Math.max(0, currentCorpus)),
       interestEarned: roundToTwo(yearlyInterest),
+      inflationAdjustedCorpus: roundToTwo(inflationAdjustedCorpus),
+      inflationAdjustedWithdrawal: roundToTwo(inflationAdjustedWithdrawal),
     });
 
     if (currentCorpus <= 0) break;
   }
 
+  // Final inflation-adjusted corpus
+  const finalDiscountFactor = getInflationDiscountFactor(inflationRate, tenure);
+  const inflationAdjustedCorpus = Math.max(0, currentCorpus) * finalDiscountFactor;
+
   return {
     totalWithdrawn: roundToTwo(cumulativeWithdrawal),
     remainingCorpus: roundToTwo(Math.max(0, currentCorpus)),
     yearlyData,
+    inflationAdjustedCorpus: roundToTwo(inflationAdjustedCorpus),
   };
 }
 
@@ -198,12 +247,13 @@ export function calculateSWP(inputs: SWPInputs): SWPCalculationResult {
  */
 export function toChartData(yearlyData: YearlyData[]): ChartDataPoint[] {
   return [
-    { year: 0, investment: 0, value: 0, returns: 0 },
+    { year: 0, investment: 0, value: 0, returns: 0, inflationAdjustedValue: 0 },
     ...yearlyData.map((data) => ({
       year: data.year,
       investment: data.cumulativeInvestment,
       value: data.valueAtYearEnd,
       returns: data.totalReturns,
+      inflationAdjustedValue: data.inflationAdjustedValue || data.valueAtYearEnd,
     })),
   ];
 }
@@ -213,12 +263,13 @@ export function toChartData(yearlyData: YearlyData[]): ChartDataPoint[] {
  */
 export function toSWPChartData(yearlyData: SWPYearlyData[], initialCorpus: number): ChartDataPoint[] {
   return [
-    { year: 0, investment: initialCorpus, value: initialCorpus, returns: 0 },
+    { year: 0, investment: initialCorpus, value: initialCorpus, returns: 0, inflationAdjustedValue: initialCorpus },
     ...yearlyData.map((data) => ({
       year: data.year,
       investment: data.cumulativeWithdrawal,
       value: data.corpusAtYearEnd,
       returns: data.interestEarned,
+      inflationAdjustedValue: data.inflationAdjustedCorpus || data.corpusAtYearEnd,
     })),
   ];
 }

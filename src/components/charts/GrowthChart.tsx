@@ -17,6 +17,8 @@ interface GrowthChartProps {
   data: ChartDataPoint[];
   region: Region;
   fullHeight?: boolean;
+  showInflation?: boolean;
+  isSWP?: boolean;
 }
 
 interface TooltipPayload {
@@ -32,16 +34,20 @@ interface CustomTooltipProps {
   label?: number;
   region: Region;
   isDark: boolean;
+  showInflation?: boolean;
+  isSWP?: boolean;
 }
 
-function CustomTooltip({ active, payload, label, region, isDark }: CustomTooltipProps) {
+function CustomTooltip({ active, payload, label, region, isDark, showInflation, isSWP }: CustomTooltipProps) {
   if (!active || !payload || !payload.length) return null;
 
   const investmentData = payload.find((p) => p.dataKey === 'investment');
   const valueData = payload.find((p) => p.dataKey === 'value');
+  const inflationData = payload.find((p) => p.dataKey === 'inflationAdjustedValue');
 
   const investment = investmentData?.value || 0;
   const value = valueData?.value || 0;
+  const inflationAdjustedValue = inflationData?.value || 0;
   const returns = value - investment;
 
   return (
@@ -49,34 +55,52 @@ function CustomTooltip({ active, payload, label, region, isDark }: CustomTooltip
       <p className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Year {label}</p>
       <div className="space-y-1 text-sm">
         <div className="flex justify-between gap-4">
-          <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Investment:</span>
+          <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>
+            {isSWP ? 'Withdrawn:' : 'Investment:'}
+          </span>
           <span className="font-medium text-blue-500">
             {formatCurrency(investment, region)}
           </span>
         </div>
-        <div className="flex justify-between gap-4">
-          <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Returns:</span>
-          <span className="font-medium text-green-500">
-            {formatCurrency(returns, region)}
-          </span>
-        </div>
+        {!isSWP && (
+          <div className="flex justify-between gap-4">
+            <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Returns:</span>
+            <span className="font-medium text-green-500">
+              {formatCurrency(returns, region)}
+            </span>
+          </div>
+        )}
         <div className={`flex justify-between gap-4 pt-1 border-t ${isDark ? 'border-slate-700' : 'border-gray-100'}`}>
-          <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Total Value:</span>
-          <span className="font-medium text-purple-500">
+          <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>
+            {isSWP ? 'Remaining Corpus:' : 'Total Value:'}
+          </span>
+          <span className="font-medium text-green-500">
             {formatCurrency(value, region)}
           </span>
         </div>
+        {showInflation && inflationAdjustedValue > 0 && (
+          <div className="flex justify-between gap-4">
+            <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>Today's Value:</span>
+            <span className="font-medium text-amber-500">
+              {formatCurrency(inflationAdjustedValue, region)}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export function GrowthChart({ data, region, fullHeight = false }: GrowthChartProps) {
+export function GrowthChart({ data, region, fullHeight = false, showInflation = false, isSWP = false }: GrowthChartProps) {
   const { isDark } = useTheme();
   const formatYAxis = (value: number) => formatCurrencyCompact(value, region);
 
   const gridColor = isDark ? '#334155' : '#e5e7eb';
   const tickColor = isDark ? '#94a3b8' : '#6b7280';
+
+  // Check if we have inflation data
+  const hasInflationData = data.length > 0 && data.some(d => d.inflationAdjustedValue !== undefined && d.inflationAdjustedValue > 0);
+  const displayInflation = showInflation && hasInflationData;
 
   return (
     <div className={`w-full ${fullHeight ? 'h-full' : 'h-80'}`}>
@@ -94,6 +118,10 @@ export function GrowthChart({ data, region, fullHeight = false }: GrowthChartPro
               <stop offset="5%" stopColor={CHART_COLORS.returns} stopOpacity={0.8} />
               <stop offset="95%" stopColor={CHART_COLORS.returns} stopOpacity={0.2} />
             </linearGradient>
+            <linearGradient id="colorInflation" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor={CHART_COLORS.inflationAdjusted} stopOpacity={0.8} />
+              <stop offset="95%" stopColor={CHART_COLORS.inflationAdjusted} stopOpacity={0.2} />
+            </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
           <XAxis
@@ -110,15 +138,22 @@ export function GrowthChart({ data, region, fullHeight = false }: GrowthChartPro
             tickFormatter={formatYAxis}
             width={70}
           />
-          <Tooltip content={<CustomTooltip region={region} isDark={isDark} />} />
+          <Tooltip content={<CustomTooltip region={region} isDark={isDark} showInflation={displayInflation} isSWP={isSWP} />} />
           <Legend
             verticalAlign="top"
             height={36}
-            formatter={(value) => (
-              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                {value === 'investment' ? 'Total Investment' : 'Total Value'}
-              </span>
-            )}
+            formatter={(value) => {
+              const labels: Record<string, string> = {
+                investment: isSWP ? 'Total Withdrawn' : 'Total Investment',
+                value: isSWP ? 'Remaining Corpus' : 'Total Value',
+                inflationAdjustedValue: "Today's Value",
+              };
+              return (
+                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                  {labels[value] || value}
+                </span>
+              );
+            }}
           />
           <Area
             type="monotone"
@@ -136,6 +171,17 @@ export function GrowthChart({ data, region, fullHeight = false }: GrowthChartPro
             fill="url(#colorValue)"
             name="value"
           />
+          {displayInflation && (
+            <Area
+              type="monotone"
+              dataKey="inflationAdjustedValue"
+              stackId="3"
+              stroke={CHART_COLORS.inflationAdjusted}
+              fill="url(#colorInflation)"
+              name="inflationAdjustedValue"
+              strokeDasharray="5 5"
+            />
+          )}
         </AreaChart>
       </ResponsiveContainer>
     </div>

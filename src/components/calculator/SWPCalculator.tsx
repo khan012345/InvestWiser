@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
-import { Wallet, TrendingUp, Landmark, RotateCcw } from 'lucide-react';
+import { Wallet, TrendingUp, Landmark, RotateCcw, TrendingDown } from 'lucide-react';
 import type { Region } from '../../types';
 import { calculateSWP, toSWPChartData } from '../../utils/calculations';
 import { formatCurrency } from '../../utils/formatCurrency';
@@ -19,11 +19,13 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
   );
   const [expectedReturn, setExpectedReturn] = useState(DEFAULT_VALUES.expectedReturn);
   const [tenure, setTenure] = useState(DEFAULT_VALUES.tenure);
+  const [inflationRate, setInflationRate] = useState(DEFAULT_VALUES.inflationRate[region]);
 
   // Update values when region changes
   useEffect(() => {
     setInitialCorpus(DEFAULT_VALUES.initialCorpus[region]);
     setMonthlyWithdrawal(DEFAULT_VALUES.monthlyWithdrawal[region]);
+    setInflationRate(DEFAULT_VALUES.inflationRate[region]);
   }, [region]);
 
   const result = useMemo(
@@ -34,8 +36,8 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
         expectedReturn,
         tenure,
         region,
-      }),
-    [initialCorpus, monthlyWithdrawal, expectedReturn, tenure, region]
+      }, inflationRate),
+    [initialCorpus, monthlyWithdrawal, expectedReturn, tenure, region, inflationRate]
   );
 
   const chartData = useMemo(
@@ -48,6 +50,7 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
     setMonthlyWithdrawal(DEFAULT_VALUES.monthlyWithdrawal[region]);
     setExpectedReturn(DEFAULT_VALUES.expectedReturn);
     setTenure(DEFAULT_VALUES.tenure);
+    setInflationRate(DEFAULT_VALUES.inflationRate[region]);
   }, [region]);
 
   const currencySymbol = region === 'INR' ? '₹' : '$';
@@ -116,6 +119,17 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
                 suffix=" years"
               />
 
+              <SliderInput
+                label="Expected Inflation Rate"
+                value={inflationRate}
+                onChange={setInflationRate}
+                min={INPUT_RANGES.inflationRate.min}
+                max={INPUT_RANGES.inflationRate.max}
+                step={INPUT_RANGES.inflationRate.step}
+                suffix="%"
+                hint={`Typical: ${region === 'INR' ? '5-7%' : '2-4%'} - Shows corpus value in today's money`}
+              />
+
               {/* Corpus depletion warning */}
               {result.remainingCorpus <= 0 && (
                 <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-md p-3">
@@ -133,7 +147,7 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
         {/* Results Panel */}
         <div className="lg:col-span-2 space-y-5">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <SummaryCard
               title="Total Withdrawn"
               value={formatCurrency(result.totalWithdrawn, region)}
@@ -152,6 +166,13 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
               icon={<Landmark className="w-5 h-5" />}
               variant="maturity"
             />
+            <SummaryCard
+              title="Inflation Adjusted"
+              value={formatCurrency(result.inflationAdjustedCorpus || result.remainingCorpus, region)}
+              icon={<TrendingDown className="w-5 h-5" />}
+              variant="inflation"
+              subtitle="Corpus in today's value"
+            />
           </div>
 
           {/* Charts */}
@@ -162,6 +183,8 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
             region={region}
             growthTitle="Corpus Depletion Over Time"
             distributionTitle="Withdrawn vs Remaining"
+            showInflation={inflationRate > 0}
+            isSWP
           />
         </div>
       </div>
