@@ -1,0 +1,185 @@
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Wallet, TrendingUp, Landmark, RotateCcw } from 'lucide-react';
+import type { Region } from '../../types';
+import { calculateSWP, toSWPChartData } from '../../utils/calculations';
+import { formatCurrency } from '../../utils/formatCurrency';
+import { DEFAULT_VALUES, INPUT_RANGES } from '../../utils/constants';
+import { Card, CardContent, SliderInput, SummaryCard, Button } from '../ui';
+import { GrowthChart, DistributionChart } from '../charts';
+import { SWPYearlyTable } from './YearlyTable';
+
+interface SWPCalculatorProps {
+  region: Region;
+}
+
+export function SWPCalculator({ region }: SWPCalculatorProps) {
+  const [initialCorpus, setInitialCorpus] = useState(DEFAULT_VALUES.initialCorpus[region]);
+  const [monthlyWithdrawal, setMonthlyWithdrawal] = useState(
+    DEFAULT_VALUES.monthlyWithdrawal[region]
+  );
+  const [expectedReturn, setExpectedReturn] = useState(DEFAULT_VALUES.expectedReturn);
+  const [tenure, setTenure] = useState(DEFAULT_VALUES.tenure);
+
+  // Update values when region changes
+  useEffect(() => {
+    setInitialCorpus(DEFAULT_VALUES.initialCorpus[region]);
+    setMonthlyWithdrawal(DEFAULT_VALUES.monthlyWithdrawal[region]);
+  }, [region]);
+
+  const result = useMemo(
+    () =>
+      calculateSWP({
+        initialCorpus,
+        monthlyWithdrawal,
+        expectedReturn,
+        tenure,
+        region,
+      }),
+    [initialCorpus, monthlyWithdrawal, expectedReturn, tenure, region]
+  );
+
+  const chartData = useMemo(
+    () => toSWPChartData(result.yearlyData, initialCorpus),
+    [result.yearlyData, initialCorpus]
+  );
+
+  const handleReset = useCallback(() => {
+    setInitialCorpus(DEFAULT_VALUES.initialCorpus[region]);
+    setMonthlyWithdrawal(DEFAULT_VALUES.monthlyWithdrawal[region]);
+    setExpectedReturn(DEFAULT_VALUES.expectedReturn);
+    setTenure(DEFAULT_VALUES.tenure);
+  }, [region]);
+
+  const currencySymbol = region === 'INR' ? '₹' : '$';
+  const corpusRanges = INPUT_RANGES.initialCorpus[region];
+  const withdrawalRanges = INPUT_RANGES.monthlyWithdrawal[region];
+
+  // Calculate total interest earned
+  const totalInterestEarned = result.yearlyData.reduce(
+    (sum, row) => sum + row.interestEarned,
+    0
+  );
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Input Panel */}
+      <div className="lg:col-span-1">
+        <Card>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">SWP Parameters</h2>
+              <Button variant="ghost" size="sm" onClick={handleReset}>
+                <RotateCcw className="w-4 h-4" />
+                Reset
+              </Button>
+            </div>
+
+            <SliderInput
+              label="Initial Corpus"
+              value={initialCorpus}
+              onChange={setInitialCorpus}
+              min={corpusRanges.min}
+              max={corpusRanges.max}
+              step={corpusRanges.step}
+              prefix={currencySymbol}
+            />
+
+            <SliderInput
+              label="Monthly Withdrawal"
+              value={monthlyWithdrawal}
+              onChange={setMonthlyWithdrawal}
+              min={withdrawalRanges.min}
+              max={withdrawalRanges.max}
+              step={withdrawalRanges.step}
+              prefix={currencySymbol}
+            />
+
+            <SliderInput
+              label="Expected Return Rate"
+              value={expectedReturn}
+              onChange={setExpectedReturn}
+              min={INPUT_RANGES.expectedReturn.min}
+              max={INPUT_RANGES.expectedReturn.max}
+              step={INPUT_RANGES.expectedReturn.step}
+              suffix="%"
+              hint="Common range: 8-15% for equity, 6-9% for debt"
+            />
+
+            <SliderInput
+              label="Withdrawal Tenure"
+              value={tenure}
+              onChange={setTenure}
+              min={INPUT_RANGES.tenure.min}
+              max={INPUT_RANGES.tenure.max}
+              step={INPUT_RANGES.tenure.step}
+              suffix=" years"
+            />
+
+            {/* Corpus depletion warning */}
+            {result.remainingCorpus <= 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-sm text-red-800">
+                  <span className="font-medium">Warning:</span> Your corpus will be depleted
+                  before the end of the tenure. Consider reducing monthly withdrawal or
+                  increasing the expected return rate.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Results Panel */}
+      <div className="lg:col-span-2 space-y-6">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <SummaryCard
+            title="Total Withdrawn"
+            value={formatCurrency(result.totalWithdrawn, region)}
+            icon={<Wallet className="w-5 h-5" />}
+            variant="investment"
+          />
+          <SummaryCard
+            title="Interest Earned"
+            value={formatCurrency(totalInterestEarned, region)}
+            icon={<TrendingUp className="w-5 h-5" />}
+            variant="returns"
+          />
+          <SummaryCard
+            title="Remaining Corpus"
+            value={formatCurrency(result.remainingCorpus, region)}
+            icon={<Landmark className="w-5 h-5" />}
+            variant="maturity"
+          />
+        </div>
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <Card className="xl:col-span-2">
+            <CardContent>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Corpus Depletion Over Time
+              </h3>
+              <GrowthChart data={chartData} region={region} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Withdrawn vs Remaining
+              </h3>
+              <DistributionChart
+                investment={result.totalWithdrawn}
+                returns={result.remainingCorpus}
+                region={region}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Yearly Table */}
+        <SWPYearlyTable data={result.yearlyData} region={region} />
+      </div>
+    </div>
+  );
+}

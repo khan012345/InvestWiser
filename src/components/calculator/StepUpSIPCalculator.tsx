@@ -1,0 +1,193 @@
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Wallet, TrendingUp, PiggyBank, RotateCcw } from 'lucide-react';
+import type { Region, StepUpFrequency } from '../../types';
+import { calculateStepUpSIP, toChartData } from '../../utils/calculations';
+import { formatCurrency } from '../../utils/formatCurrency';
+import { DEFAULT_VALUES, INPUT_RANGES, STEP_UP_FREQUENCY_OPTIONS } from '../../utils/constants';
+import { Card, CardContent, SliderInput, SummaryCard, Button, RadioGroup } from '../ui';
+import { GrowthChart, DistributionChart } from '../charts';
+import { SIPYearlyTable } from './YearlyTable';
+
+interface StepUpSIPCalculatorProps {
+  region: Region;
+}
+
+export function StepUpSIPCalculator({ region }: StepUpSIPCalculatorProps) {
+  const [monthlyInvestment, setMonthlyInvestment] = useState(
+    DEFAULT_VALUES.monthlyInvestment[region]
+  );
+  const [expectedReturn, setExpectedReturn] = useState(DEFAULT_VALUES.expectedReturn);
+  const [tenure, setTenure] = useState(DEFAULT_VALUES.tenure);
+  const [stepUpPercentage, setStepUpPercentage] = useState(DEFAULT_VALUES.stepUpPercentage);
+  const [stepUpFrequency, setStepUpFrequency] = useState<StepUpFrequency>(
+    DEFAULT_VALUES.stepUpFrequency
+  );
+
+  // Update monthly investment when region changes
+  useEffect(() => {
+    setMonthlyInvestment(DEFAULT_VALUES.monthlyInvestment[region]);
+  }, [region]);
+
+  const result = useMemo(
+    () =>
+      calculateStepUpSIP({
+        monthlyInvestment,
+        expectedReturn,
+        tenure,
+        region,
+        stepUpPercentage,
+        stepUpFrequency,
+      }),
+    [monthlyInvestment, expectedReturn, tenure, region, stepUpPercentage, stepUpFrequency]
+  );
+
+  const chartData = useMemo(() => toChartData(result.yearlyData), [result.yearlyData]);
+
+  const handleReset = useCallback(() => {
+    setMonthlyInvestment(DEFAULT_VALUES.monthlyInvestment[region]);
+    setExpectedReturn(DEFAULT_VALUES.expectedReturn);
+    setTenure(DEFAULT_VALUES.tenure);
+    setStepUpPercentage(DEFAULT_VALUES.stepUpPercentage);
+    setStepUpFrequency(DEFAULT_VALUES.stepUpFrequency);
+  }, [region]);
+
+  const currencySymbol = region === 'INR' ? '₹' : '$';
+  const ranges = INPUT_RANGES.monthlyInvestment[region];
+
+  // Get final monthly SIP amount
+  const finalMonthlyAmount =
+    result.yearlyData.length > 0
+      ? result.yearlyData[result.yearlyData.length - 1].monthlyAmount
+      : monthlyInvestment;
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Input Panel */}
+      <div className="lg:col-span-1">
+        <Card>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">Step-Up SIP Parameters</h2>
+              <Button variant="ghost" size="sm" onClick={handleReset}>
+                <RotateCcw className="w-4 h-4" />
+                Reset
+              </Button>
+            </div>
+
+            <SliderInput
+              label="Initial Monthly Investment"
+              value={monthlyInvestment}
+              onChange={setMonthlyInvestment}
+              min={ranges.min}
+              max={ranges.max}
+              step={ranges.step}
+              prefix={currencySymbol}
+            />
+
+            <SliderInput
+              label="Annual Step-Up"
+              value={stepUpPercentage}
+              onChange={setStepUpPercentage}
+              min={INPUT_RANGES.stepUpPercentage.min}
+              max={INPUT_RANGES.stepUpPercentage.max}
+              step={INPUT_RANGES.stepUpPercentage.step}
+              suffix="%"
+              hint="Typical range: 5-10%"
+            />
+
+            <RadioGroup
+              label="Step-Up Frequency"
+              options={STEP_UP_FREQUENCY_OPTIONS}
+              value={stepUpFrequency}
+              onChange={(value) => setStepUpFrequency(value as StepUpFrequency)}
+            />
+
+            <SliderInput
+              label="Expected Return Rate"
+              value={expectedReturn}
+              onChange={setExpectedReturn}
+              min={INPUT_RANGES.expectedReturn.min}
+              max={INPUT_RANGES.expectedReturn.max}
+              step={INPUT_RANGES.expectedReturn.step}
+              suffix="%"
+              hint="Common range: 8-15% for equity, 6-9% for debt"
+            />
+
+            <SliderInput
+              label="Investment Tenure"
+              value={tenure}
+              onChange={setTenure}
+              min={INPUT_RANGES.tenure.min}
+              max={INPUT_RANGES.tenure.max}
+              step={INPUT_RANGES.tenure.step}
+              suffix=" years"
+            />
+
+            {/* Final SIP Amount Info */}
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <p className="text-sm text-amber-800">
+                <span className="font-medium">Final Monthly SIP (Year {tenure}):</span>
+                <br />
+                <span className="text-lg font-bold">
+                  {formatCurrency(finalMonthlyAmount || 0, region)}
+                </span>
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Results Panel */}
+      <div className="lg:col-span-2 space-y-6">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <SummaryCard
+            title="Total Investment"
+            value={formatCurrency(result.totalInvestment, region)}
+            icon={<Wallet className="w-5 h-5" />}
+            variant="investment"
+          />
+          <SummaryCard
+            title="Expected Returns"
+            value={formatCurrency(result.expectedReturns, region)}
+            icon={<TrendingUp className="w-5 h-5" />}
+            variant="returns"
+          />
+          <SummaryCard
+            title="Maturity Value"
+            value={formatCurrency(result.maturityValue, region)}
+            icon={<PiggyBank className="w-5 h-5" />}
+            variant="maturity"
+          />
+        </div>
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <Card className="xl:col-span-2">
+            <CardContent>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Investment Growth Over Time
+              </h3>
+              <GrowthChart data={chartData} region={region} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Investment vs Returns
+              </h3>
+              <DistributionChart
+                investment={result.totalInvestment}
+                returns={result.expectedReturns}
+                region={region}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Yearly Table */}
+        <SIPYearlyTable data={result.yearlyData} region={region} showMonthlyAmount />
+      </div>
+    </div>
+  );
+}

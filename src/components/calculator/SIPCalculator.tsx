@@ -1,0 +1,150 @@
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { Wallet, TrendingUp, PiggyBank, RotateCcw } from 'lucide-react';
+import type { Region } from '../../types';
+import { calculateSIP, toChartData } from '../../utils/calculations';
+import { formatCurrency } from '../../utils/formatCurrency';
+import { DEFAULT_VALUES, INPUT_RANGES } from '../../utils/constants';
+import { Card, CardContent, SliderInput, SummaryCard, Button } from '../ui';
+import { GrowthChart, DistributionChart } from '../charts';
+import { SIPYearlyTable } from './YearlyTable';
+
+interface SIPCalculatorProps {
+  region: Region;
+}
+
+export function SIPCalculator({ region }: SIPCalculatorProps) {
+  const [monthlyInvestment, setMonthlyInvestment] = useState(
+    DEFAULT_VALUES.monthlyInvestment[region]
+  );
+  const [expectedReturn, setExpectedReturn] = useState(DEFAULT_VALUES.expectedReturn);
+  const [tenure, setTenure] = useState(DEFAULT_VALUES.tenure);
+
+  // Update monthly investment when region changes
+  useEffect(() => {
+    setMonthlyInvestment(DEFAULT_VALUES.monthlyInvestment[region]);
+  }, [region]);
+
+  const result = useMemo(
+    () =>
+      calculateSIP({
+        monthlyInvestment,
+        expectedReturn,
+        tenure,
+        region,
+      }),
+    [monthlyInvestment, expectedReturn, tenure, region]
+  );
+
+  const chartData = useMemo(() => toChartData(result.yearlyData), [result.yearlyData]);
+
+  const handleReset = useCallback(() => {
+    setMonthlyInvestment(DEFAULT_VALUES.monthlyInvestment[region]);
+    setExpectedReturn(DEFAULT_VALUES.expectedReturn);
+    setTenure(DEFAULT_VALUES.tenure);
+  }, [region]);
+
+  const currencySymbol = region === 'INR' ? '₹' : '$';
+  const ranges = INPUT_RANGES.monthlyInvestment[region];
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Input Panel */}
+      <div className="lg:col-span-1">
+        <Card>
+          <CardContent className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-900">SIP Parameters</h2>
+              <Button variant="ghost" size="sm" onClick={handleReset}>
+                <RotateCcw className="w-4 h-4" />
+                Reset
+              </Button>
+            </div>
+
+            <SliderInput
+              label="Monthly Investment"
+              value={monthlyInvestment}
+              onChange={setMonthlyInvestment}
+              min={ranges.min}
+              max={ranges.max}
+              step={ranges.step}
+              prefix={currencySymbol}
+            />
+
+            <SliderInput
+              label="Expected Return Rate"
+              value={expectedReturn}
+              onChange={setExpectedReturn}
+              min={INPUT_RANGES.expectedReturn.min}
+              max={INPUT_RANGES.expectedReturn.max}
+              step={INPUT_RANGES.expectedReturn.step}
+              suffix="%"
+              hint="Common range: 8-15% for equity, 6-9% for debt"
+            />
+
+            <SliderInput
+              label="Investment Tenure"
+              value={tenure}
+              onChange={setTenure}
+              min={INPUT_RANGES.tenure.min}
+              max={INPUT_RANGES.tenure.max}
+              step={INPUT_RANGES.tenure.step}
+              suffix=" years"
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Results Panel */}
+      <div className="lg:col-span-2 space-y-6">
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <SummaryCard
+            title="Total Investment"
+            value={formatCurrency(result.totalInvestment, region)}
+            icon={<Wallet className="w-5 h-5" />}
+            variant="investment"
+          />
+          <SummaryCard
+            title="Expected Returns"
+            value={formatCurrency(result.expectedReturns, region)}
+            icon={<TrendingUp className="w-5 h-5" />}
+            variant="returns"
+          />
+          <SummaryCard
+            title="Maturity Value"
+            value={formatCurrency(result.maturityValue, region)}
+            icon={<PiggyBank className="w-5 h-5" />}
+            variant="maturity"
+          />
+        </div>
+
+        {/* Charts */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <Card className="xl:col-span-2">
+            <CardContent>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Investment Growth Over Time
+              </h3>
+              <GrowthChart data={chartData} region={region} />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent>
+              <h3 className="text-sm font-semibold text-gray-700 mb-4">
+                Investment vs Returns
+              </h3>
+              <DistributionChart
+                investment={result.totalInvestment}
+                returns={result.expectedReturns}
+                region={region}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Yearly Table */}
+        <SIPYearlyTable data={result.yearlyData} region={region} />
+      </div>
+    </div>
+  );
+}
