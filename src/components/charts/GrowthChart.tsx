@@ -15,6 +15,7 @@ import { CHART_COLORS } from '../../utils/constants';
 interface GrowthChartProps {
   data: ChartDataPoint[];
   region: Region;
+  fullHeight?: boolean;
 }
 
 interface TooltipPayload {
@@ -68,11 +69,11 @@ function CustomTooltip({ active, payload, label, region }: CustomTooltipProps) {
   );
 }
 
-export function GrowthChart({ data, region }: GrowthChartProps) {
+export function GrowthChart({ data, region, fullHeight = false }: GrowthChartProps) {
   const formatYAxis = (value: number) => formatCurrencyCompact(value, region);
 
   return (
-    <div className="w-full h-80">
+    <div className={`w-full ${fullHeight ? 'h-full' : 'h-80'}`}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}

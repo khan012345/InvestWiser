@@ -1,7 +1,9 @@
+import { useState, useRef, useEffect } from 'react';
 import type { YearlyData, SWPYearlyData, Region } from '../../types';
 import { formatCurrency } from '../../utils/formatCurrency';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui';
-import { Table } from 'lucide-react';
+import { exportSIPData, exportSWPData } from '../../utils/exportData';
+import { CardTitle } from '../ui';
+import { Table, Download, FileSpreadsheet, FileText, ChevronDown } from 'lucide-react';
 
 interface SIPYearlyTableProps {
   data: YearlyData[];
@@ -9,101 +11,164 @@ interface SIPYearlyTableProps {
   showMonthlyAmount?: boolean;
 }
 
+interface ExportDropdownProps {
+  onExportCSV: () => void;
+  onExportExcel: () => void;
+}
+
+function ExportDropdown({ onExportCSV, onExportExcel }: ExportDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+      >
+        <Download className="w-4 h-4" />
+        Export
+        <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+      {isOpen && (
+        <div className="absolute right-0 mt-1 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+          <button
+            onClick={() => {
+              onExportCSV();
+              setIsOpen(false);
+            }}
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-t-lg"
+          >
+            <FileText className="w-4 h-4 text-green-600" />
+            Export as CSV
+          </button>
+          <button
+            onClick={() => {
+              onExportExcel();
+              setIsOpen(false);
+            }}
+            className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-b-lg border-t border-gray-100"
+          >
+            <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+            Export as Excel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function SIPYearlyTable({ data, region, showMonthlyAmount = false }: SIPYearlyTableProps) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center gap-2">
-        <Table className="w-5 h-5 text-indigo-600" />
-        <CardTitle>Year-on-Year Breakdown</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="table-container max-h-96 overflow-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Year
-                </th>
-                {showMonthlyAmount && (
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                    Monthly SIP
-                  </th>
-                )}
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Annual Investment
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Cumulative Investment
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Value at Year-End
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Total Returns
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {data.map((row, index) => (
-                <tr
-                  key={row.year}
-                  className={`
-                    ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
-                    ${row.year % 5 === 0 ? 'bg-indigo-50/50' : ''}
-                    hover:bg-indigo-50/30 transition-colors
-                  `}
-                >
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                    {row.year}
-                  </td>
-                  {showMonthlyAmount && (
-                    <td className="px-4 py-3 text-sm text-right text-gray-700">
-                      {formatCurrency(row.monthlyAmount || 0, region)}
-                    </td>
-                  )}
-                  <td className="px-4 py-3 text-sm text-right text-gray-700">
-                    {formatCurrency(row.annualInvestment, region)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-blue-600 font-medium">
-                    {formatCurrency(row.cumulativeInvestment, region)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-purple-600 font-medium">
-                    {formatCurrency(row.valueAtYearEnd, region)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
-                    {formatCurrency(row.totalReturns, region)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="bg-gray-100 border-t-2 border-gray-200">
-                <td className="px-4 py-3 text-sm font-bold text-gray-900">
-                  Total
-                </td>
-                {showMonthlyAmount && <td />}
-                <td className="px-4 py-3 text-sm text-right text-gray-500">-</td>
-                <td className="px-4 py-3 text-sm text-right text-blue-700 font-bold">
-                  {data.length > 0
-                    ? formatCurrency(data[data.length - 1].cumulativeInvestment, region)
-                    : '-'}
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-purple-700 font-bold">
-                  {data.length > 0
-                    ? formatCurrency(data[data.length - 1].valueAtYearEnd, region)
-                    : '-'}
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-green-700 font-bold">
-                  {data.length > 0
-                    ? formatCurrency(data[data.length - 1].totalReturns, region)
-                    : '-'}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      {/* Header with Export - separate div to avoid clipping */}
+      <div className="px-6 py-4 border-b border-gray-100 flex flex-row items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Table className="w-5 h-5 text-indigo-600" />
+          <CardTitle>Year-on-Year Breakdown</CardTitle>
         </div>
-      </CardContent>
-    </Card>
+        <ExportDropdown
+          onExportCSV={() => exportSIPData(data, region, 'csv', showMonthlyAmount)}
+          onExportExcel={() => exportSIPData(data, region, 'excel', showMonthlyAmount)}
+        />
+      </div>
+      {/* Table Content */}
+      <div className="table-container max-h-96 overflow-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Year
+              </th>
+              {showMonthlyAmount && (
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  Monthly SIP
+                </th>
+              )}
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Annual Investment
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Cumulative Investment
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Value at Year-End
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Total Returns
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {data.map((row, index) => (
+              <tr
+                key={row.year}
+                className={`
+                  ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
+                  ${row.year % 5 === 0 ? 'bg-indigo-50/50' : ''}
+                  hover:bg-indigo-50/30 transition-colors
+                `}
+              >
+                <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                  {row.year}
+                </td>
+                {showMonthlyAmount && (
+                  <td className="px-4 py-3 text-sm text-right text-gray-700">
+                    {formatCurrency(row.monthlyAmount || 0, region)}
+                  </td>
+                )}
+                <td className="px-4 py-3 text-sm text-right text-gray-700">
+                  {formatCurrency(row.annualInvestment, region)}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-blue-600 font-medium">
+                  {formatCurrency(row.cumulativeInvestment, region)}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-purple-600 font-medium">
+                  {formatCurrency(row.valueAtYearEnd, region)}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
+                  {formatCurrency(row.totalReturns, region)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="bg-gray-100 border-t-2 border-gray-200">
+              <td className="px-4 py-3 text-sm font-bold text-gray-900">
+                Total
+              </td>
+              {showMonthlyAmount && <td />}
+              <td className="px-4 py-3 text-sm text-right text-gray-500">-</td>
+              <td className="px-4 py-3 text-sm text-right text-blue-700 font-bold">
+                {data.length > 0
+                  ? formatCurrency(data[data.length - 1].cumulativeInvestment, region)
+                  : '-'}
+              </td>
+              <td className="px-4 py-3 text-sm text-right text-purple-700 font-bold">
+                {data.length > 0
+                  ? formatCurrency(data[data.length - 1].valueAtYearEnd, region)
+                  : '-'}
+              </td>
+              <td className="px-4 py-3 text-sm text-right text-green-700 font-bold">
+                {data.length > 0
+                  ? formatCurrency(data[data.length - 1].totalReturns, region)
+                  : '-'}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
   );
 }
 
@@ -114,90 +179,96 @@ interface SWPYearlyTableProps {
 
 export function SWPYearlyTable({ data, region }: SWPYearlyTableProps) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center gap-2">
-        <Table className="w-5 h-5 text-indigo-600" />
-        <CardTitle>Year-on-Year Breakdown</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="table-container max-h-96 overflow-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Year
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Annual Withdrawal
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Cumulative Withdrawal
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Corpus at Year-End
-                </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  Interest Earned
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {data.map((row, index) => (
-                <tr
-                  key={row.year}
-                  className={`
-                    ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
-                    ${row.year % 5 === 0 ? 'bg-indigo-50/50' : ''}
-                    hover:bg-indigo-50/30 transition-colors
-                  `}
-                >
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                    {row.year}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-700">
-                    {formatCurrency(row.annualWithdrawal, region)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-red-600 font-medium">
-                    {formatCurrency(row.cumulativeWithdrawal, region)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-purple-600 font-medium">
-                    {formatCurrency(row.corpusAtYearEnd, region)}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
-                    {formatCurrency(row.interestEarned, region)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr className="bg-gray-100 border-t-2 border-gray-200">
-                <td className="px-4 py-3 text-sm font-bold text-gray-900">
-                  Total
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-gray-500">-</td>
-                <td className="px-4 py-3 text-sm text-right text-red-700 font-bold">
-                  {data.length > 0
-                    ? formatCurrency(data[data.length - 1].cumulativeWithdrawal, region)
-                    : '-'}
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-purple-700 font-bold">
-                  {data.length > 0
-                    ? formatCurrency(data[data.length - 1].corpusAtYearEnd, region)
-                    : '-'}
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-green-700 font-bold">
-                  {data.length > 0
-                    ? formatCurrency(
-                        data.reduce((sum, row) => sum + row.interestEarned, 0),
-                        region
-                      )
-                    : '-'}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+      {/* Header with Export - separate div to avoid clipping */}
+      <div className="px-6 py-4 border-b border-gray-100 flex flex-row items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Table className="w-5 h-5 text-indigo-600" />
+          <CardTitle>Year-on-Year Breakdown</CardTitle>
         </div>
-      </CardContent>
-    </Card>
+        <ExportDropdown
+          onExportCSV={() => exportSWPData(data, region, 'csv')}
+          onExportExcel={() => exportSWPData(data, region, 'excel')}
+        />
+      </div>
+      {/* Table Content */}
+      <div className="table-container max-h-96 overflow-auto">
+        <table className="w-full">
+          <thead>
+            <tr className="bg-gray-50 border-b border-gray-200">
+              <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Year
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Annual Withdrawal
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Cumulative Withdrawal
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Corpus at Year-End
+              </th>
+              <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                Interest Earned
+              </th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-100">
+            {data.map((row, index) => (
+              <tr
+                key={row.year}
+                className={`
+                  ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}
+                  ${row.year % 5 === 0 ? 'bg-indigo-50/50' : ''}
+                  hover:bg-indigo-50/30 transition-colors
+                `}
+              >
+                <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                  {row.year}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-gray-700">
+                  {formatCurrency(row.annualWithdrawal, region)}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-red-600 font-medium">
+                  {formatCurrency(row.cumulativeWithdrawal, region)}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-purple-600 font-medium">
+                  {formatCurrency(row.corpusAtYearEnd, region)}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-green-600 font-medium">
+                  {formatCurrency(row.interestEarned, region)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+          <tfoot>
+            <tr className="bg-gray-100 border-t-2 border-gray-200">
+              <td className="px-4 py-3 text-sm font-bold text-gray-900">
+                Total
+              </td>
+              <td className="px-4 py-3 text-sm text-right text-gray-500">-</td>
+              <td className="px-4 py-3 text-sm text-right text-red-700 font-bold">
+                {data.length > 0
+                  ? formatCurrency(data[data.length - 1].cumulativeWithdrawal, region)
+                  : '-'}
+              </td>
+              <td className="px-4 py-3 text-sm text-right text-purple-700 font-bold">
+                {data.length > 0
+                  ? formatCurrency(data[data.length - 1].corpusAtYearEnd, region)
+                  : '-'}
+              </td>
+              <td className="px-4 py-3 text-sm text-right text-green-700 font-bold">
+                {data.length > 0
+                  ? formatCurrency(
+                      data.reduce((sum, row) => sum + row.interestEarned, 0),
+                      region
+                    )
+                  : '-'}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
   );
 }
