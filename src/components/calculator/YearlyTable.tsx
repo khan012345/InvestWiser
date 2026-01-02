@@ -88,7 +88,7 @@ export function SIPYearlyTable({ data, region, showMonthlyAmount = false, showIn
       </div>
       {/* Table Content */}
       <div className="table-container max-h-96 overflow-auto">
-        <table className="w-full">
+        <table className="w-full min-w-max">
           <thead>
             <tr className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">
@@ -224,7 +224,7 @@ export function SWPYearlyTable({ data, region, showInflation = true }: SWPYearly
       </div>
       {/* Table Content */}
       <div className="table-container max-h-96 overflow-auto">
-        <table className="w-full">
+        <table className="w-full min-w-max">
           <thead>
             <tr className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
               <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wider">

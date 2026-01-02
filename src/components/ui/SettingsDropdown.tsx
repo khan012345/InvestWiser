@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Settings, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Settings, Sun, Moon } from 'lucide-react';
 import type { Region } from '../../types';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -20,6 +20,9 @@ export function SettingsDropdown({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { isDark, toggleTheme } = useTheme();
 
+  // Check if any non-default settings are active
+  const hasActiveSettings = region === 'USD' || !showInflation || isDark;
+
   // Close dropdown when clicking outside
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -37,16 +40,19 @@ export function SettingsDropdown({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          p-2 rounded-lg transition-all duration-200 flex items-center gap-1
+          relative p-2 rounded-lg transition-all duration-200
           ${isOpen
             ? 'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400'
             : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600'
           }
         `}
         aria-label="Settings"
+        title="Settings"
       >
-        <Settings className="w-5 h-5" />
-        <ChevronDown className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <Settings className={`w-5 h-5 transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`} />
+        {hasActiveSettings && !isOpen && (
+          <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-indigo-500 rounded-full" />
+        )}
       </button>
 
       {isOpen && (
