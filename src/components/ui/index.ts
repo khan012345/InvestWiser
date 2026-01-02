@@ -6,3 +6,4 @@ export { SummaryCard } from './SummaryCard';
 export { RadioGroup } from './RadioGroup';
 export { Button } from './Button';
 export { ThemeToggle } from './ThemeToggle';
+export { SettingsDropdown } from './SettingsDropdown';

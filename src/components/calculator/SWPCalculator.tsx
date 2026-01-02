@@ -10,9 +10,10 @@ import { SWPYearlyTable } from './YearlyTable';
 
 interface SWPCalculatorProps {
   region: Region;
+  showInflation: boolean;
 }
 
-export function SWPCalculator({ region }: SWPCalculatorProps) {
+export function SWPCalculator({ region, showInflation }: SWPCalculatorProps) {
   const [initialCorpus, setInitialCorpus] = useState(DEFAULT_VALUES.initialCorpus[region]);
   const [monthlyWithdrawal, setMonthlyWithdrawal] = useState(
     DEFAULT_VALUES.monthlyWithdrawal[region]
@@ -119,16 +120,18 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
                 suffix=" years"
               />
 
-              <SliderInput
-                label="Expected Inflation Rate"
-                value={inflationRate}
-                onChange={setInflationRate}
-                min={INPUT_RANGES.inflationRate.min}
-                max={INPUT_RANGES.inflationRate.max}
-                step={INPUT_RANGES.inflationRate.step}
-                suffix="%"
-                hint={`Typical: ${region === 'INR' ? '5-7%' : '2-4%'} - Shows corpus value in today's money`}
-              />
+              {showInflation && (
+                <SliderInput
+                  label="Expected Inflation Rate"
+                  value={inflationRate}
+                  onChange={setInflationRate}
+                  min={INPUT_RANGES.inflationRate.min}
+                  max={INPUT_RANGES.inflationRate.max}
+                  step={INPUT_RANGES.inflationRate.step}
+                  suffix="%"
+                  hint={`Typical: ${region === 'INR' ? '5-7%' : '2-4%'} - Shows corpus value in today's money`}
+                />
+              )}
 
               {/* Corpus depletion warning */}
               {result.remainingCorpus <= 0 && (
@@ -147,7 +150,7 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
         {/* Results Panel */}
         <div className="lg:col-span-2 space-y-5">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 ${showInflation ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-3`}>
             <SummaryCard
               title="Total Withdrawn"
               value={formatCurrency(result.totalWithdrawn, region)}
@@ -166,13 +169,15 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
               icon={<Landmark className="w-5 h-5" />}
               variant="maturity"
             />
-            <SummaryCard
-              title="Inflation Adjusted"
-              value={formatCurrency(result.inflationAdjustedCorpus || result.remainingCorpus, region)}
-              icon={<TrendingDown className="w-5 h-5" />}
-              variant="inflation"
-              subtitle="Corpus in today's value"
-            />
+            {showInflation && (
+              <SummaryCard
+                title="Inflation Adjusted"
+                value={formatCurrency(result.inflationAdjustedCorpus || result.remainingCorpus, region)}
+                icon={<TrendingDown className="w-5 h-5" />}
+                variant="inflation"
+                subtitle="Corpus in today's value"
+              />
+            )}
           </div>
 
           {/* Charts */}
@@ -183,14 +188,14 @@ export function SWPCalculator({ region }: SWPCalculatorProps) {
             region={region}
             growthTitle="Corpus Depletion Over Time"
             distributionTitle="Withdrawn vs Remaining"
-            showInflation={inflationRate > 0}
+            showInflation={showInflation && inflationRate > 0}
             isSWP
           />
         </div>
       </div>
 
       {/* Yearly Table - Full Width */}
-      <SWPYearlyTable data={result.yearlyData} region={region} />
+      <SWPYearlyTable data={result.yearlyData} region={region} showInflation={showInflation} />
     </div>
   );
 }

@@ -10,9 +10,10 @@ import { SIPYearlyTable } from './YearlyTable';
 
 interface SIPCalculatorProps {
   region: Region;
+  showInflation: boolean;
 }
 
-export function SIPCalculator({ region }: SIPCalculatorProps) {
+export function SIPCalculator({ region, showInflation }: SIPCalculatorProps) {
   const [monthlyInvestment, setMonthlyInvestment] = useState(
     DEFAULT_VALUES.monthlyInvestment[region]
   );
@@ -95,16 +96,18 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
                 suffix=" years"
               />
 
-              <SliderInput
-                label="Expected Inflation Rate"
-                value={inflationRate}
-                onChange={setInflationRate}
-                min={INPUT_RANGES.inflationRate.min}
-                max={INPUT_RANGES.inflationRate.max}
-                step={INPUT_RANGES.inflationRate.step}
-                suffix="%"
-                hint={`Typical: ${region === 'INR' ? '5-7%' : '2-4%'} - Adjusts future value to today's money`}
-              />
+              {showInflation && (
+                <SliderInput
+                  label="Expected Inflation Rate"
+                  value={inflationRate}
+                  onChange={setInflationRate}
+                  min={INPUT_RANGES.inflationRate.min}
+                  max={INPUT_RANGES.inflationRate.max}
+                  step={INPUT_RANGES.inflationRate.step}
+                  suffix="%"
+                  hint={`Typical: ${region === 'INR' ? '5-7%' : '2-4%'} - Adjusts future value to today's money`}
+                />
+              )}
             </CardContent>
           </Card>
         </div>
@@ -112,7 +115,7 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
         {/* Results Panel */}
         <div className="lg:col-span-2 space-y-5">
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className={`grid grid-cols-1 sm:grid-cols-2 ${showInflation ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-3`}>
             <SummaryCard
               title="Total Investment"
               value={formatCurrency(result.totalInvestment, region)}
@@ -131,13 +134,15 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
               icon={<PiggyBank className="w-5 h-5" />}
               variant="maturity"
             />
-            <SummaryCard
-              title="Inflation Adjusted"
-              value={formatCurrency(result.inflationAdjustedMaturity || result.maturityValue, region)}
-              icon={<TrendingDown className="w-5 h-5" />}
-              variant="inflation"
-              subtitle="Today's value"
-            />
+            {showInflation && (
+              <SummaryCard
+                title="Inflation Adjusted"
+                value={formatCurrency(result.inflationAdjustedMaturity || result.maturityValue, region)}
+                icon={<TrendingDown className="w-5 h-5" />}
+                variant="inflation"
+                subtitle="Today's value"
+              />
+            )}
           </div>
 
           {/* Charts */}
@@ -146,13 +151,13 @@ export function SIPCalculator({ region }: SIPCalculatorProps) {
             investment={result.totalInvestment}
             returns={result.expectedReturns}
             region={region}
-            showInflation={inflationRate > 0}
+            showInflation={showInflation && inflationRate > 0}
           />
         </div>
       </div>
 
       {/* Yearly Table - Full Width */}
-      <SIPYearlyTable data={result.yearlyData} region={region} />
+      <SIPYearlyTable data={result.yearlyData} region={region} showInflation={showInflation} />
     </div>
   );
 }

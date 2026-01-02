@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Calculator, TrendingUp, ArrowDownUp } from 'lucide-react';
 import type { Region, CalculatorType } from './types';
-import { Tabs, RegionToggle, ThemeToggle } from './components/ui';
+import { Tabs, ThemeToggle, SettingsDropdown } from './components/ui';
 import { SIPCalculator, StepUpSIPCalculator, SWPCalculator } from './components/calculator';
 
 const CALCULATOR_TABS = [
@@ -13,6 +13,7 @@ const CALCULATOR_TABS = [
 function App() {
   const [activeTab, setActiveTab] = useState<CalculatorType>('sip');
   const [region, setRegion] = useState<Region>('INR');
+  const [showInflation, setShowInflation] = useState(true);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 flex flex-col">
@@ -31,9 +32,14 @@ function App() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <ThemeToggle />
-              <RegionToggle value={region} onChange={setRegion} />
+              <SettingsDropdown
+                region={region}
+                onRegionChange={setRegion}
+                showInflation={showInflation}
+                onInflationToggle={setShowInflation}
+              />
             </div>
           </div>
         </div>
@@ -52,9 +58,9 @@ function App() {
 
         {/* Calculator Content */}
         <div className="bg-white dark:bg-slate-800 rounded-b-xl border border-gray-200 dark:border-slate-700 p-5">
-          {activeTab === 'sip' && <SIPCalculator region={region} />}
-          {activeTab === 'stepup' && <StepUpSIPCalculator region={region} />}
-          {activeTab === 'swp' && <SWPCalculator region={region} />}
+          {activeTab === 'sip' && <SIPCalculator region={region} showInflation={showInflation} />}
+          {activeTab === 'stepup' && <StepUpSIPCalculator region={region} showInflation={showInflation} />}
+          {activeTab === 'swp' && <SWPCalculator region={region} showInflation={showInflation} />}
         </div>
       </main>
 
