@@ -7,6 +7,7 @@ import { DEFAULT_VALUES, INPUT_RANGES, STEP_UP_FREQUENCY_OPTIONS } from '../../u
 import { Card, CardContent, SliderInput, SummaryCard, Button, RadioGroup } from '../ui';
 import { ChartTabs } from '../charts';
 import { SIPYearlyTable } from './YearlyTable';
+import { useSEO, SEO_CONFIG } from '../../hooks/useSEO';
 
 interface StepUpSIPCalculatorProps {
   region: Region;
@@ -14,6 +15,8 @@ interface StepUpSIPCalculatorProps {
 }
 
 export function StepUpSIPCalculator({ region, showInflation }: StepUpSIPCalculatorProps) {
+  useSEO(SEO_CONFIG['step-up-sip-calculator']);
+
   const [monthlyInvestment, setMonthlyInvestment] = useState(
     DEFAULT_VALUES.monthlyInvestment[region]
   );

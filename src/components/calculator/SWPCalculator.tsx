@@ -7,6 +7,7 @@ import { DEFAULT_VALUES, INPUT_RANGES } from '../../utils/constants';
 import { Card, CardContent, SliderInput, SummaryCard, Button } from '../ui';
 import { ChartTabs } from '../charts';
 import { SWPYearlyTable } from './YearlyTable';
+import { useSEO, SEO_CONFIG } from '../../hooks/useSEO';
 
 interface SWPCalculatorProps {
   region: Region;
@@ -14,6 +15,8 @@ interface SWPCalculatorProps {
 }
 
 export function SWPCalculator({ region, showInflation }: SWPCalculatorProps) {
+  useSEO(SEO_CONFIG['swp-calculator']);
+
   const [initialCorpus, setInitialCorpus] = useState(DEFAULT_VALUES.initialCorpus[region]);
   const [monthlyWithdrawal, setMonthlyWithdrawal] = useState(
     DEFAULT_VALUES.monthlyWithdrawal[region]

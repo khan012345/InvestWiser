@@ -7,6 +7,7 @@ import { DEFAULT_VALUES, INPUT_RANGES } from '../../utils/constants';
 import { Card, CardContent, SliderInput, SummaryCard, Button } from '../ui';
 import { ChartTabs } from '../charts';
 import { SIPYearlyTable } from './YearlyTable';
+import { useSEO, SEO_CONFIG } from '../../hooks/useSEO';
 
 interface SIPCalculatorProps {
   region: Region;
@@ -14,6 +15,8 @@ interface SIPCalculatorProps {
 }
 
 export function SIPCalculator({ region, showInflation }: SIPCalculatorProps) {
+  useSEO(SEO_CONFIG['sip-calculator']);
+
   const [monthlyInvestment, setMonthlyInvestment] = useState(
     DEFAULT_VALUES.monthlyInvestment[region]
   );
