@@ -126,6 +126,8 @@ export function DistributionChart({ investment, returns, region }: DistributionC
               outerRadius={outerRadius}
               paddingAngle={2}
               dataKey="value"
+              stroke={isDark ? '#1e293b' : '#ffffff'}
+              strokeWidth={2}
             >
               {data.map((entry, index) => (
                 <Cell key={`cell-${index}`} fill={entry.color} />
