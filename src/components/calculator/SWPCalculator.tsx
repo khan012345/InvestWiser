@@ -4,7 +4,7 @@ import type { Region } from '../../types';
 import { calculateSWP, toSWPChartData } from '../../utils/calculations';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { DEFAULT_VALUES, INPUT_RANGES } from '../../utils/constants';
-import { Card, CardContent, SliderInput, SummaryCard, Button } from '../ui';
+import { SliderInput, SummaryCard, Button } from '../ui';
 import { ChartTabs } from '../charts';
 import { SWPYearlyTable } from './YearlyTable';
 import { useSEO, SEO_CONFIG } from '../../hooks/useSEO';
@@ -68,14 +68,15 @@ export function SWPCalculator({ region, showInflation }: SWPCalculatorProps) {
   );
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div className="md:space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 md:gap-5">
         {/* Input Panel */}
         <div className="lg:col-span-1">
-          <Card>
-            <CardContent className="space-y-4">
+          {/* Mobile: edge-to-edge section */}
+          <div className="bg-white dark:bg-slate-800 md:rounded-xl md:border md:border-gray-100 md:dark:border-slate-700 md:shadow-sm">
+            <div className="px-4 py-4 md:p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">SWP Parameters</h2>
+                <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">SWP Parameters</h2>
                 <Button variant="ghost" size="sm" onClick={handleReset}>
                   <RotateCcw className="w-4 h-4" />
                   Reset
@@ -139,74 +140,80 @@ export function SWPCalculator({ region, showInflation }: SWPCalculatorProps) {
               {/* Corpus depletion warning */}
               {result.remainingCorpus <= 0 && (
                 <div className="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-md p-3">
-                  <p className="text-sm text-red-800 dark:text-red-200">
+                  <p className="text-xs md:text-sm text-red-800 dark:text-red-200">
                     <span className="font-medium">Warning:</span> Your corpus will be depleted
                     before the end of the tenure. Consider reducing monthly withdrawal or
                     increasing the expected return rate.
                   </p>
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Results Panel */}
-        <div className="lg:col-span-2 space-y-5">
-          {/* Summary Cards */}
-          <div className={`grid grid-cols-1 sm:grid-cols-2 ${showInflation ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-3 transition-all duration-300`}>
-            <SummaryCard
-              title="Total Withdrawn"
-              value={formatCurrency(result.totalWithdrawn, region)}
-              icon={<Wallet className="w-5 h-5" />}
-              variant="investment"
-            />
-            <SummaryCard
-              title="Interest Earned"
-              value={formatCurrency(totalInterestEarned, region)}
-              icon={<TrendingUp className="w-5 h-5" />}
-              variant="returns"
-            />
-            <SummaryCard
-              title="Remaining Corpus"
-              value={formatCurrency(result.remainingCorpus, region)}
-              icon={<Landmark className="w-5 h-5" />}
-              variant="maturity"
-            />
-            <div
-              className={`transition-all duration-300 ease-in-out ${
-                showInflation
-                  ? 'opacity-100 scale-100 max-w-full'
-                  : 'opacity-0 scale-95 max-w-0 overflow-hidden'
-              }`}
-            >
-              {showInflation && (
-                <SummaryCard
-                  title="Inflation Adjusted"
-                  value={formatCurrency(result.inflationAdjustedCorpus || result.remainingCorpus, region)}
-                  icon={<TrendingDown className="w-5 h-5" />}
-                  variant="inflation"
-                  subtitle="Corpus in today's value"
-                />
-              )}
+        <div className="lg:col-span-2 md:space-y-5">
+          {/* Summary Cards - Mobile: with subtle top border */}
+          <div className="border-t border-gray-100 dark:border-slate-700 md:border-0 bg-white dark:bg-slate-800 md:bg-transparent px-4 py-4 md:p-0">
+            <div className={`grid grid-cols-2 ${showInflation ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-2 md:gap-3 transition-all duration-300`}>
+              <SummaryCard
+                title="Total Withdrawn"
+                value={formatCurrency(result.totalWithdrawn, region)}
+                icon={<Wallet className="w-5 h-5" />}
+                variant="investment"
+              />
+              <SummaryCard
+                title="Interest Earned"
+                value={formatCurrency(totalInterestEarned, region)}
+                icon={<TrendingUp className="w-5 h-5" />}
+                variant="returns"
+              />
+              <SummaryCard
+                title="Remaining Corpus"
+                value={formatCurrency(result.remainingCorpus, region)}
+                icon={<Landmark className="w-5 h-5" />}
+                variant="maturity"
+              />
+              <div
+                className={`transition-all duration-300 ease-in-out ${
+                  showInflation
+                    ? 'opacity-100 scale-100 max-w-full'
+                    : 'opacity-0 scale-95 max-w-0 overflow-hidden'
+                }`}
+              >
+                {showInflation && (
+                  <SummaryCard
+                    title="Inflation Adjusted"
+                    value={formatCurrency(result.inflationAdjustedCorpus || result.remainingCorpus, region)}
+                    icon={<TrendingDown className="w-5 h-5" />}
+                    variant="inflation"
+                    subtitle="Corpus in today's value"
+                  />
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Charts */}
-          <ChartTabs
-            chartData={chartData}
-            investment={result.totalWithdrawn}
-            returns={result.remainingCorpus}
-            region={region}
-            growthTitle="Corpus Depletion Over Time"
-            distributionTitle="Withdrawn vs Remaining"
-            showInflation={showInflation && inflationRate > 0}
-            isSWP
-          />
+          {/* Charts - Mobile: edge-to-edge with border */}
+          <div className="border-t border-gray-100 dark:border-slate-700 md:border-0">
+            <ChartTabs
+              chartData={chartData}
+              investment={result.totalWithdrawn}
+              returns={result.remainingCorpus}
+              region={region}
+              growthTitle="Corpus Depletion Over Time"
+              distributionTitle="Withdrawn vs Remaining"
+              showInflation={showInflation && inflationRate > 0}
+              isSWP
+            />
+          </div>
         </div>
       </div>
 
-      {/* Yearly Table - Full Width */}
-      <SWPYearlyTable data={result.yearlyData} region={region} showInflation={showInflation} />
+      {/* Yearly Table - Full Width with top border on mobile */}
+      <div className="border-t border-gray-100 dark:border-slate-700 md:border-0">
+        <SWPYearlyTable data={result.yearlyData} region={region} showInflation={showInflation} />
+      </div>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   AreaChart,
   Area,
@@ -12,6 +13,20 @@ import type { ChartDataPoint, Region } from '../../types';
 import { formatCurrencyCompact, formatCurrency } from '../../utils/formatCurrency';
 import { CHART_COLORS } from '../../utils/constants';
 import { useTheme } from '../../contexts/ThemeContext';
+
+// Hook to detect mobile viewport
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < breakpoint);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, [breakpoint]);
+
+  return isMobile;
+}
 
 interface GrowthChartProps {
   data: ChartDataPoint[];
@@ -51,9 +66,9 @@ function CustomTooltip({ active, payload, label, region, isDark, showInflation, 
   const returns = value - investment;
 
   return (
-    <div className={`p-4 rounded-lg shadow-lg border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'}`}>
-      <p className={`font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Year {label}</p>
-      <div className="space-y-1 text-sm">
+    <div className={`p-3 md:p-4 rounded-lg shadow-lg border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-100'}`}>
+      <p className={`font-semibold mb-1.5 md:mb-2 text-sm md:text-base ${isDark ? 'text-white' : 'text-gray-900'}`}>Year {label}</p>
+      <div className="space-y-0.5 md:space-y-1 text-xs md:text-sm">
         <div className="flex justify-between gap-4">
           <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>
             {isSWP ? 'Withdrawn:' : 'Investment:'}
@@ -93,6 +108,7 @@ function CustomTooltip({ active, payload, label, region, isDark, showInflation, 
 
 export function GrowthChart({ data, region, fullHeight = false, showInflation = false, isSWP = false }: GrowthChartProps) {
   const { isDark } = useTheme();
+  const isMobile = useIsMobile();
   const formatYAxis = (value: number) => formatCurrencyCompact(value, region);
 
   const gridColor = isDark ? '#334155' : '#e5e7eb';
@@ -103,11 +119,11 @@ export function GrowthChart({ data, region, fullHeight = false, showInflation = 
   const displayInflation = showInflation && hasInflationData;
 
   return (
-    <div className={`w-full ${fullHeight ? 'h-full' : 'h-80'}`}>
+    <div className={`w-full ${fullHeight ? 'h-full' : 'h-64 md:h-80'}`}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
           data={data}
-          margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+          margin={{ top: 5, right: isMobile ? 10 : 5, left: isMobile ? 0 : -10, bottom: 0 }}
         >
           <defs>
             <linearGradient id="colorInvestment" x1="0" y1="0" x2="0" y2="1">
@@ -128,28 +144,32 @@ export function GrowthChart({ data, region, fullHeight = false, showInflation = 
             dataKey="year"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: tickColor, fontSize: 12 }}
+            tick={{ fill: tickColor, fontSize: 10 }}
             tickFormatter={(value) => `Y${value}`}
+            interval="preserveStartEnd"
           />
-          <YAxis
-            axisLine={false}
-            tickLine={false}
-            tick={{ fill: tickColor, fontSize: 12 }}
-            tickFormatter={formatYAxis}
-            width={70}
-          />
+          {!isMobile && (
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tick={{ fill: tickColor, fontSize: 10 }}
+              tickFormatter={formatYAxis}
+              width={55}
+            />
+          )}
           <Tooltip content={<CustomTooltip region={region} isDark={isDark} showInflation={displayInflation} isSWP={isSWP} />} />
           <Legend
             verticalAlign="top"
-            height={36}
+            height={32}
+            wrapperStyle={{ fontSize: '10px' }}
             formatter={(value) => {
               const labels: Record<string, string> = {
-                investment: isSWP ? 'Total Withdrawn' : 'Total Investment',
-                value: isSWP ? 'Remaining Corpus' : 'Total Value',
-                inflationAdjustedValue: "Today's Value",
+                investment: isSWP ? 'Withdrawn' : 'Investment',
+                value: isSWP ? 'Corpus' : 'Value',
+                inflationAdjustedValue: "Today's",
               };
               return (
-                <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                <span className={`text-xs md:text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
                   {labels[value] || value}
                 </span>
               );

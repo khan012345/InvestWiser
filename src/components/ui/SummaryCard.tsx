@@ -58,24 +58,25 @@ export function SummaryCard({ title, value, icon, variant, className = '', subti
         ${className}
       `}
     >
-      <div className="flex flex-col items-center text-center gap-1.5 md:gap-0 md:space-y-3">
+      {/* Horizontal layout on mobile, vertical on desktop */}
+      <div className="flex items-center gap-3 md:flex-col md:items-center md:text-center md:gap-0 md:space-y-3">
         <div
           className={`
             ${styles.iconBg} ${styles.iconColor}
-            p-1.5 rounded-md md:p-3 md:rounded-xl
+            p-2 rounded-lg md:p-3 md:rounded-xl shrink-0
             transition-transform duration-200
             group-hover:scale-105 md:group-hover:scale-110
           `}
         >
           {icon}
         </div>
-        <div className="md:space-y-1">
-          <p className="text-xs md:text-sm md:font-medium text-gray-600 dark:text-slate-400">{title}</p>
-          <p className={`text-base md:text-xl font-bold ${styles.valueColor} leading-tight`}>
+        <div className="flex-1 min-w-0 md:space-y-1">
+          <p className="text-[11px] md:text-sm md:font-medium text-gray-600 dark:text-slate-400 truncate">{title}</p>
+          <p className={`text-sm md:text-xl font-bold ${styles.valueColor} leading-tight truncate`}>
             {value}
           </p>
           {subtitle && (
-            <p className="text-[10px] md:text-xs text-gray-500 dark:text-slate-500">{subtitle}</p>
+            <p className="text-[10px] md:text-xs text-gray-500 dark:text-slate-500 truncate">{subtitle}</p>
           )}
         </div>
       </div>

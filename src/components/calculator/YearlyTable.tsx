@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import type { YearlyData, SWPYearlyData, Region } from '../../types';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { exportSIPData, exportSWPData, exportSIPToGoogleSheets, exportSWPToGoogleSheets } from '../../utils/exportData';
-import { CardTitle } from '../ui';
 import { Table, Download, FileSpreadsheet, FileText, ChevronDown, ExternalLink } from 'lucide-react';
 
 function GoogleSheetsIcon({ className }: { className?: string }) {
@@ -100,12 +99,15 @@ export function SIPYearlyTable({ data, region, showMonthlyAmount = false, showIn
   const displayInflation = showInflation && hasInflationData;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-      {/* Header with Export - separate div to avoid clipping */}
-      <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex flex-row items-center justify-between">
+    <div className="bg-white dark:bg-slate-800 md:rounded-xl md:shadow-sm md:border md:border-gray-100 md:dark:border-slate-700">
+      {/* Header with Export */}
+      <div className="px-4 md:px-6 py-3 md:py-4 md:border-b md:border-gray-100 md:dark:border-slate-700 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
-          <Table className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-          <CardTitle>Year-on-Year Breakdown</CardTitle>
+          <Table className="w-4 h-4 md:w-5 md:h-5 text-indigo-600 dark:text-indigo-400" />
+          <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-white">
+            <span className="hidden md:inline">Year-on-Year Breakdown</span>
+            <span className="md:hidden">Export Data</span>
+          </span>
         </div>
         <ExportDropdown
           onExportCSV={() => exportSIPData(data, region, 'csv', showMonthlyAmount, displayInflation)}
@@ -113,8 +115,8 @@ export function SIPYearlyTable({ data, region, showMonthlyAmount = false, showIn
           onExportGoogleSheets={() => exportSIPToGoogleSheets(data, region, showMonthlyAmount, displayInflation)}
         />
       </div>
-      {/* Table Content */}
-      <div className="table-container max-h-96 overflow-auto">
+      {/* Table Content - Hidden on mobile */}
+      <div className="hidden md:block table-container max-h-96 overflow-auto">
         <table className="w-full min-w-max">
           <thead>
             <tr className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">
@@ -237,12 +239,15 @@ export function SWPYearlyTable({ data, region, showInflation = true }: SWPYearly
   const displayInflation = showInflation && hasInflationData;
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
-      {/* Header with Export - separate div to avoid clipping */}
-      <div className="px-6 py-4 border-b border-gray-100 dark:border-slate-700 flex flex-row items-center justify-between">
+    <div className="bg-white dark:bg-slate-800 md:rounded-xl md:shadow-sm md:border md:border-gray-100 md:dark:border-slate-700">
+      {/* Header with Export */}
+      <div className="px-4 md:px-6 py-3 md:py-4 md:border-b md:border-gray-100 md:dark:border-slate-700 flex flex-row items-center justify-between">
         <div className="flex items-center gap-2">
-          <Table className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-          <CardTitle>Year-on-Year Breakdown</CardTitle>
+          <Table className="w-4 h-4 md:w-5 md:h-5 text-indigo-600 dark:text-indigo-400" />
+          <span className="text-sm md:text-base font-semibold text-gray-900 dark:text-white">
+            <span className="hidden md:inline">Year-on-Year Breakdown</span>
+            <span className="md:hidden">Export Data</span>
+          </span>
         </div>
         <ExportDropdown
           onExportCSV={() => exportSWPData(data, region, 'csv', displayInflation)}
@@ -250,8 +255,8 @@ export function SWPYearlyTable({ data, region, showInflation = true }: SWPYearly
           onExportGoogleSheets={() => exportSWPToGoogleSheets(data, region, displayInflation)}
         />
       </div>
-      {/* Table Content */}
-      <div className="table-container max-h-96 overflow-auto">
+      {/* Table Content - Hidden on mobile */}
+      <div className="hidden md:block table-container max-h-96 overflow-auto">
         <table className="w-full min-w-max">
           <thead>
             <tr className="bg-gray-50 dark:bg-slate-700 border-b border-gray-200 dark:border-slate-600">

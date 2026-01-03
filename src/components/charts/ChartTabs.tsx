@@ -42,37 +42,38 @@ export function ChartTabs({
 
   return (
     <>
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700">
+      <div className="bg-white dark:bg-slate-800 md:rounded-xl md:shadow-sm md:border md:border-gray-100 md:dark:border-slate-700">
         {/* Tab Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 dark:border-slate-700 px-4">
+        <div className="flex items-center justify-between border-b border-gray-100 dark:border-slate-700 px-2 md:px-4">
           <div className="flex">
             <button
               onClick={() => setActiveTab('growth')}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 ${
+              className={`flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2.5 md:py-3 text-xs md:text-sm font-medium border-b-2 transition-colors duration-200 ${
                 activeTab === 'growth'
                   ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
                   : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
               }`}
             >
-              <TrendingUp className="w-4 h-4" />
-              Growth Chart
+              <TrendingUp className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Growth Chart</span>
+              <span className="sm:hidden">Growth</span>
             </button>
             <button
               onClick={() => setActiveTab('distribution')}
-              className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors duration-200 ${
+              className={`flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-2.5 md:py-3 text-xs md:text-sm font-medium border-b-2 transition-colors duration-200 ${
                 activeTab === 'distribution'
                   ? 'border-indigo-500 text-indigo-600 dark:text-indigo-400'
                   : 'border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200'
               }`}
             >
-              <PieChart className="w-4 h-4" />
+              <PieChart className="w-3.5 h-3.5 md:w-4 md:h-4" />
               Distribution
             </button>
           </div>
           {activeTab === 'growth' && (
             <button
               onClick={handleExpand}
-              className="p-2 text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
+              className="p-1.5 md:p-2 text-gray-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-slate-700 rounded-lg transition-colors"
               title="Expand to fullscreen"
             >
               <Maximize2 className="w-4 h-4" />
@@ -81,10 +82,10 @@ export function ChartTabs({
         </div>
 
         {/* Tab Content */}
-        <div className="p-5">
+        <div className="p-3 md:p-5">
           {activeTab === 'growth' && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-4">
+              <h3 className="text-xs md:text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3 md:mb-4">
                 {growthTitle}
               </h3>
               <GrowthChart data={chartData} region={region} showInflation={showInflation} isSWP={isSWP} />
@@ -92,7 +93,7 @@ export function ChartTabs({
           )}
           {activeTab === 'distribution' && (
             <div>
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-slate-300 mb-4">
+              <h3 className="text-xs md:text-sm font-semibold text-gray-700 dark:text-slate-300 mb-3 md:mb-4">
                 {distributionTitle}
               </h3>
               <DistributionChart

@@ -4,7 +4,7 @@ import type { Region } from '../../types';
 import { calculateSIP, toChartData } from '../../utils/calculations';
 import { formatCurrency } from '../../utils/formatCurrency';
 import { DEFAULT_VALUES, INPUT_RANGES } from '../../utils/constants';
-import { Card, CardContent, SliderInput, SummaryCard, Button } from '../ui';
+import { SliderInput, SummaryCard, Button } from '../ui';
 import { ChartTabs } from '../charts';
 import { SIPYearlyTable } from './YearlyTable';
 import { useSEO, SEO_CONFIG } from '../../hooks/useSEO';
@@ -54,14 +54,15 @@ export function SIPCalculator({ region, showInflation }: SIPCalculatorProps) {
   const ranges = INPUT_RANGES.monthlyInvestment[region];
 
   return (
-    <div className="space-y-5">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+    <div className="md:space-y-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 md:gap-5">
         {/* Input Panel */}
         <div className="lg:col-span-1">
-          <Card>
-            <CardContent className="space-y-4">
+          {/* Mobile: edge-to-edge section */}
+          <div className="bg-white dark:bg-slate-800 md:rounded-xl md:border md:border-gray-100 md:dark:border-slate-700 md:shadow-sm">
+            <div className="px-4 py-4 md:p-5 space-y-4">
               <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">SIP Parameters</h2>
+                <h2 className="text-base md:text-lg font-semibold text-gray-900 dark:text-white">SIP Parameters</h2>
                 <Button variant="ghost" size="sm" onClick={handleReset}>
                   <RotateCcw className="w-4 h-4" />
                   Reset
@@ -111,64 +112,70 @@ export function SIPCalculator({ region, showInflation }: SIPCalculatorProps) {
                   hint={`Typical: ${region === 'INR' ? '5-7%' : '2-4%'} - Adjusts future value to today's money`}
                 />
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Results Panel */}
-        <div className="lg:col-span-2 space-y-5">
-          {/* Summary Cards */}
-          <div className={`grid grid-cols-1 sm:grid-cols-2 ${showInflation ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-3 transition-all duration-300`}>
-            <SummaryCard
-              title="Total Investment"
-              value={formatCurrency(result.totalInvestment, region)}
-              icon={<Wallet className="w-5 h-5" />}
-              variant="investment"
-            />
-            <SummaryCard
-              title="Expected Returns"
-              value={formatCurrency(result.expectedReturns, region)}
-              icon={<TrendingUp className="w-5 h-5" />}
-              variant="returns"
-            />
-            <SummaryCard
-              title="Maturity Value"
-              value={formatCurrency(result.maturityValue, region)}
-              icon={<PiggyBank className="w-5 h-5" />}
-              variant="maturity"
-            />
-            <div
-              className={`transition-all duration-300 ease-in-out ${
-                showInflation
-                  ? 'opacity-100 scale-100 max-w-full'
-                  : 'opacity-0 scale-95 max-w-0 overflow-hidden'
-              }`}
-            >
-              {showInflation && (
-                <SummaryCard
-                  title="Inflation Adjusted"
-                  value={formatCurrency(result.inflationAdjustedMaturity || result.maturityValue, region)}
-                  icon={<TrendingDown className="w-5 h-5" />}
-                  variant="inflation"
-                  subtitle="Today's value"
-                />
-              )}
+        <div className="lg:col-span-2 md:space-y-5">
+          {/* Summary Cards - Mobile: with subtle top border */}
+          <div className="border-t border-gray-100 dark:border-slate-700 md:border-0 bg-white dark:bg-slate-800 md:bg-transparent px-4 py-4 md:p-0">
+            <div className={`grid grid-cols-2 ${showInflation ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-2 md:gap-3 transition-all duration-300`}>
+              <SummaryCard
+                title="Total Investment"
+                value={formatCurrency(result.totalInvestment, region)}
+                icon={<Wallet className="w-5 h-5" />}
+                variant="investment"
+              />
+              <SummaryCard
+                title="Expected Returns"
+                value={formatCurrency(result.expectedReturns, region)}
+                icon={<TrendingUp className="w-5 h-5" />}
+                variant="returns"
+              />
+              <SummaryCard
+                title="Maturity Value"
+                value={formatCurrency(result.maturityValue, region)}
+                icon={<PiggyBank className="w-5 h-5" />}
+                variant="maturity"
+              />
+              <div
+                className={`transition-all duration-300 ease-in-out ${
+                  showInflation
+                    ? 'opacity-100 scale-100 max-w-full'
+                    : 'opacity-0 scale-95 max-w-0 overflow-hidden'
+                }`}
+              >
+                {showInflation && (
+                  <SummaryCard
+                    title="Inflation Adjusted"
+                    value={formatCurrency(result.inflationAdjustedMaturity || result.maturityValue, region)}
+                    icon={<TrendingDown className="w-5 h-5" />}
+                    variant="inflation"
+                    subtitle="Today's value"
+                  />
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Charts */}
-          <ChartTabs
-            chartData={chartData}
-            investment={result.totalInvestment}
-            returns={result.expectedReturns}
-            region={region}
-            showInflation={showInflation && inflationRate > 0}
-          />
+          {/* Charts - Mobile: edge-to-edge with border */}
+          <div className="border-t border-gray-100 dark:border-slate-700 md:border-0">
+            <ChartTabs
+              chartData={chartData}
+              investment={result.totalInvestment}
+              returns={result.expectedReturns}
+              region={region}
+              showInflation={showInflation && inflationRate > 0}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Yearly Table - Full Width */}
-      <SIPYearlyTable data={result.yearlyData} region={region} showInflation={showInflation} />
+      {/* Yearly Table - Full Width with top border on mobile */}
+      <div className="border-t border-gray-100 dark:border-slate-700 md:border-0">
+        <SIPYearlyTable data={result.yearlyData} region={region} showInflation={showInflation} />
+      </div>
     </div>
   );
 }
