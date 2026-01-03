@@ -8,7 +8,7 @@ interface SEOProps {
   ogType?: string;
 }
 
-const BASE_URL = 'https://investwise.app';
+const BASE_URL = 'https://invest-wiser.vercel.app';
 const SITE_NAME = 'InvestWise';
 
 export function useSEO({ title, description, keywords, canonicalPath = '/', ogType = 'website' }: SEOProps) {
